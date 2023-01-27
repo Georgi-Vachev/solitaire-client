@@ -74,7 +74,7 @@ async function populateBoard() {
     for (let texture in spritesheet.textures) {
         const card = new PIXI.Sprite(spritesheet.textures[texture])
         card.scale.set(0.21)
-        card.position.set(posX, 20);
+        card.position.set(posX, 200);
         const mask = new PIXI.Graphics();
         mask.beginFill(0);
         mask.drawRoundedRect(card.x, card.y, 85, 130, 10);
@@ -90,19 +90,23 @@ async function populateBoard() {
 }
 
 function outlinePiles(x, y) {
-    const pileBorder = new PIXI.Graphics();
+    for (let i = x; i <= 650; i += 100) {
+        for (let j = y; j <= 220; j += 180) {
+            if (i == 250 && j == y) {
+                continue;
+            } else {
+                const pileBorder = new PIXI.Graphics();
+                pileBorder.lineStyle(2, 0xFFCC00, 1);
+                pileBorder.drawRoundedRect(0, 0, 95, 140, 5);
+                pileBorder.endFill();
+                pileBorder.position.set(i, j);
+                app.stage.addChild(pileBorder);
+            }
 
-    pileBorder.lineStyle(2, 0xFFCC00, 1);
-    pileBorder.moveTo(5, 0);
-    pileBorder.arc(90, 5, 5, -Math.PI / 2, 0);
-    pileBorder.lineTo(95, 135);
-    pileBorder.arc(90, 135, 5, 0, Math.PI / 2);
-    pileBorder.lineTo(5, 140);
-    pileBorder.arc(5, 135, 5, Math.PI / 2, Math.PI);
-    pileBorder.lineTo(0, 5);
-    pileBorder.arc(5, 5, 5, Math.PI, -Math.PI / 2);
-    pileBorder.position.set(x, y);
-    app.stage.addChild(pileBorder);
+        }
+
+    }
+
 }
 
 
