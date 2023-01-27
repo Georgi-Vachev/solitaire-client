@@ -113,14 +113,14 @@ function outlinePiles(x, y) {
 const testFront = PIXI.Sprite.from('assets/22331.jpg');
 testFront.width = 80;
 testFront.height = 120;
-testFront.position.set(300, 300);
+testFront.position.set(300, 500);
 testFront.anchor.set(0.5, 0.5)
 
 
 const testBack = PIXI.Sprite.from('assets/cardback.png');
 testBack.width = 80;
 testBack.height = 120;
-testBack.position.set(300, 300);
+testBack.position.set(300, 500);
 testBack.anchor.set(0.5, 0.5);
 
 app.stage.addChild(testBack, testFront);
