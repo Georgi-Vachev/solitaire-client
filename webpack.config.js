@@ -23,6 +23,7 @@ module.exports = {
         publicPath: '/dist/'
     },
     devServer: {
+        port: 5000,
         static: {
             directory: path.join(__dirname, '/'),
             publicPath: '/',
