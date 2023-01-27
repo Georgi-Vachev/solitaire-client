@@ -1,4 +1,7 @@
 export async function getSpritesheet(PIXI) {
+
+    const cardbackTexture = PIXI.Texture.from('assets/cardback.png')
+
     const atlasData = {
         frames: [],
         meta: {
@@ -36,5 +39,8 @@ export async function getSpritesheet(PIXI) {
 
     await spritesheet.parse()
 
-    return spritesheet;
+    return {
+        cardbackTexture
+        , spritesheet
+    };
 }

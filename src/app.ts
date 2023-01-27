@@ -4,6 +4,7 @@ import * as PIXI from 'pixi.js';
 import { getSpritesheet } from "./util";
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
+import { Card } from "./Card";
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
@@ -67,20 +68,30 @@ function createPixiApp(): PIXI.Application {
 }
 
 async function populateBoard() {
-    const spritesheet = await getSpritesheet(PIXI);
+    const assets = await getSpritesheet(PIXI);
+    const spritesheet = assets.spritesheet;
 
-    let posX = 55;
+    let posX = 97;
 
     for (let texture in spritesheet.textures) {
-        const card = new PIXI.Sprite(spritesheet.textures[texture])
-        card.scale.set(0.21)
-        card.position.set(posX, 200);
+        const cardfront = new PIXI.Sprite(spritesheet.textures[texture])
+        const cardback = new PIXI.Sprite(assets.cardbackTexture);
+        cardfront.anchor.set(0.5);
+        cardback.anchor.set(0.5);
+        cardfront.position.set(posX, 265);
+        cardback.position.set(posX, 265);
+        cardfront.width = 80;
+        cardfront.height = 120;
+        cardback.width = 80;
+        cardback.height = 120;
         const mask = new PIXI.Graphics();
         mask.beginFill(0);
-        mask.drawRoundedRect(card.x, card.y, 85, 130, 10);
+        mask.drawRoundedRect(cardfront.x, cardfront.y, 85, 130, 10);
         mask.endFill();
-        card.mask = mask;
-        app.stage.addChild(card)
+        // cardfront.mask = mask;
+        // cardback.mask = mask;
+        const card = new Card(posX, 200, cardfront, texture, mask, false, cardback)
+        app.stage.addChild(card.activeSprite);
         if (posX < 600) {
             posX += 100
         } else {
@@ -110,21 +121,17 @@ function outlinePiles(x, y) {
 }
 
 
-const testFront = PIXI.Sprite.from('assets/22331.jpg');
-testFront.width = 80;
-testFront.height = 120;
-testFront.position.set(300, 500);
-testFront.anchor.set(0.5, 0.5)
+// const testFront = PIXI.Sprite.from('assets/22331.jpg');
+// testFront.width = 80;
+// testFront.height = 120;
+// testFront.position.set(300, 500);
+// testFront.anchor.set(0.5, 0.5)
 
 
-const testBack = PIXI.Sprite.from('assets/cardback.png');
-testBack.width = 80;
-testBack.height = 120;
-testBack.position.set(300, 500);
-testBack.anchor.set(0.5, 0.5);
 
-app.stage.addChild(testBack, testFront);
 
-const tl = gsap.timeline();
-tl.to(testFront, {pixi: {skewY: 90}, duration: 1});
-tl.fromTo(testBack, {pixi: {skewY: -90}}, {pixi: {skewY: 0}, duration: 1});
+// app.stage.addChild(testBack, testFront);
+
+// const tl = gsap.timeline();
+// tl.to(testFront, { pixi: { skewY: 90, }, duration: 1, delay: 1 });
+// tl.fromTo(testBack, { pixi: { skewY: -90 } }, { pixi: { skewY: 0 }, duration: 1 });
