@@ -2,6 +2,13 @@ import { Connection } from "./Connection";
 import { engine } from "./engine";
 import * as PIXI from 'pixi.js';
 import { getSpritesheet } from "./util";
+import { gsap } from 'gsap';
+import { PixiPlugin } from "gsap/PixiPlugin";
+
+gsap.registerPlugin(PixiPlugin);
+PixiPlugin.registerPIXI(PIXI);
+
+
 
 const initForm = document.querySelector('form');
 const initSection = document.getElementById('init');
@@ -97,11 +104,23 @@ function outlinePiles(x, y) {
     pileBorder.position.set(x, y);
     app.stage.addChild(pileBorder);
 }
-// setMask();
-// function setMask(sprite?: PIXI.Sprite){
-//     const mask = new PIXI.Graphics();
-//     mask.beginFill(0);
-//     mask.drawRoundedRect(45, 20, 100, 130, 5);
-//     mask.endFill();
-//     sprite.mask = mask;
-// }
+
+
+const testFront = PIXI.Sprite.from('assets/22331.jpg');
+testFront.width = 80;
+testFront.height = 120;
+testFront.position.set(300, 300);
+testFront.anchor.set(0.5, 0.5)
+
+
+const testBack = PIXI.Sprite.from('assets/cardback.png');
+testBack.width = 80;
+testBack.height = 120;
+testBack.position.set(300, 300);
+testBack.anchor.set(0.5, 0.5);
+
+app.stage.addChild(testBack, testFront);
+
+const tl = gsap.timeline();
+tl.to(testFront, {pixi: {skewY: 90}, duration: 1});
+tl.fromTo(testBack, {pixi: {skewY: -90}}, {pixi: {skewY: 0}, duration: 1});
