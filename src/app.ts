@@ -34,7 +34,7 @@ function showBoard() {
 
     document.body.appendChild(app.view as HTMLCanvasElement);
     populateBoard();
-    outlinePiles();
+    outlinePiles(50, 15);
 }
 
 function showInit() {
@@ -67,7 +67,7 @@ async function populateBoard() {
     for (let texture in spritesheet.textures) {
         const card = new PIXI.Sprite(spritesheet.textures[texture])
         card.scale.set(0.21)
-        card.position.set(posX, 200);
+        card.position.set(posX, 20);
         app.stage.addChild(card)
         if (posX < 600) {
             posX += 100
@@ -77,18 +77,18 @@ async function populateBoard() {
     }
 }
 
-function outlinePiles() {
+function outlinePiles(x, y) {
     const pileBorder = new PIXI.Graphics();
 
     pileBorder.lineStyle(2, 0xFFCC00, 1);
     pileBorder.moveTo(5, 0);
-    pileBorder.arc(80, 5, 5, -Math.PI / 2, 0);
-    pileBorder.lineTo(85, 120);
-    pileBorder.arc(80, 120, 5, 0, Math.PI / 2);
-    pileBorder.lineTo(5, 125);
-    pileBorder.arc(5, 120, 5, Math.PI / 2, Math.PI);
+    pileBorder.arc(90, 5, 5, -Math.PI / 2, 0);
+    pileBorder.lineTo(95, 135);
+    pileBorder.arc(90, 135, 5, 0, Math.PI / 2);
+    pileBorder.lineTo(5, 140);
+    pileBorder.arc(5, 135, 5, Math.PI / 2, Math.PI);
     pileBorder.lineTo(0, 5);
     pileBorder.arc(5, 5, 5, Math.PI, -Math.PI / 2);
-    pileBorder.position.set(50, 20);
+    pileBorder.position.set(x, y);
     app.stage.addChild(pileBorder);
 }
