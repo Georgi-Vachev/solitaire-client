@@ -68,6 +68,11 @@ async function populateBoard() {
         const card = new PIXI.Sprite(spritesheet.textures[texture])
         card.scale.set(0.21)
         card.position.set(posX, 20);
+        const mask = new PIXI.Graphics();
+        mask.beginFill(0);
+        mask.drawRoundedRect(card.x, card.y, 85, 130, 10);
+        mask.endFill();
+        card.mask = mask;
         app.stage.addChild(card)
         if (posX < 600) {
             posX += 100
@@ -92,3 +97,11 @@ function outlinePiles(x, y) {
     pileBorder.position.set(x, y);
     app.stage.addChild(pileBorder);
 }
+// setMask();
+// function setMask(sprite?: PIXI.Sprite){
+//     const mask = new PIXI.Graphics();
+//     mask.beginFill(0);
+//     mask.drawRoundedRect(45, 20, 100, 130, 5);
+//     mask.endFill();
+//     sprite.mask = mask;
+// }
