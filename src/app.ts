@@ -40,7 +40,7 @@ function showBoard() {
     initSection.style.display = 'none';
     gameSection.style.display = 'block';
 
-    document.body.appendChild(app.view as HTMLCanvasElement);
+    document.getElementById('board').appendChild(app.view as HTMLCanvasElement);
     populateBoard();
     outlinePiles(50, 15);
 }
@@ -55,14 +55,14 @@ function showInit() {
 function createPixiApp(): PIXI.Application {
     const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x00a000, antialias: true });
 
-    (app.view as HTMLCanvasElement).style.position = 'absolute';
-    (app.view as HTMLCanvasElement).style.left = '50%';
-    (app.view as HTMLCanvasElement).style.top = '50%';
-    (app.view as HTMLCanvasElement).style.transform = 'translate3d( -50%, -50%, 0 )';
+    // (app.view as HTMLCanvasElement).style.position = 'absolute';
+    // (app.view as HTMLCanvasElement).style.left = '50%';
+    // (app.view as HTMLCanvasElement).style.top = '50%';
+    // (app.view as HTMLCanvasElement).style.transform = 'translate3d( -50%, -50%, 0 )';
     (app.view as HTMLCanvasElement).style.borderRadius = '30px';
     (app.view as HTMLCanvasElement).style.border = 'solid 2px #fff';
     (app.view as HTMLCanvasElement).style.boxShadow = '#333 0 0 7px';
-    (app.view as HTMLCanvasElement).style.marginTop = '12px';
+    (app.view as HTMLCanvasElement).style.margin = 'auto 0';
 
     return app;
 }
