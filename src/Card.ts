@@ -26,20 +26,7 @@ export class Card {
         this.rank = name.split('')[1];
         this.suit = name.split('')[0];
         this.faceUp = faceUp;
-        faceUp ? this.activate() : this.deactivate();
         this.attachEvents();
-    }
-
-    deactivate() {
-        this.faceUp = false;
-        this.cardfront.visible = false;
-        this.cardback.visible = true;
-    }
-
-    activate() {
-        this.faceUp = true;
-        this.cardfront.visible = true;
-        this.cardback.visible = false;
     }
 
     attachEvents() {
@@ -47,7 +34,8 @@ export class Card {
     }
 
     private flip() {
-        this.tl.to(this.cardback, { pixi: { scaleX: 0, }, duration: .5, onComplete: () => this.activate() });
+        this.faceUp = true;
+        this.tl.to(this.cardback, { pixi: { scaleX: 0, }, duration: .5 });
         this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0 } }, { pixi: { scaleX: 0.2 }, duration: .5 });
     }
 }
