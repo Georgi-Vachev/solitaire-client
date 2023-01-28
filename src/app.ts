@@ -71,7 +71,7 @@ async function populateBoard() {
     const assets = await getSpritesheet(PIXI);
     const spritesheet = assets.spritesheet;
 
-    let posX = 97;
+    let posX = 97.5;
 
     for (let texture in spritesheet.textures) {
         const cardfront = new PIXI.Sprite(spritesheet.textures[texture])
@@ -86,12 +86,12 @@ async function populateBoard() {
         cardback.height = 120;
         const mask = new PIXI.Graphics();
         mask.beginFill(0);
-        mask.drawRoundedRect(cardfront.x, cardfront.y, 85, 130, 10);
+        mask.drawRoundedRect(cardback.x - 40, cardback.y - 60, 80, 120, 6);
         mask.endFill();
-        // cardfront.mask = mask;
-        // cardback.mask = mask;
-        const card = new Card(posX, 200, cardfront, texture, mask, false, cardback)
-        app.stage.addChild(card.activeSprite);
+        cardfront.mask = mask;
+        cardback.mask = mask;
+        const card = new Card(posX, 200, cardfront, cardback, texture, false)
+        app.stage.addChild(card.cardfront, card.cardback);
         if (posX < 600) {
             posX += 100
         } else {

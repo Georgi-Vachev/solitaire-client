@@ -10,15 +10,13 @@ export class Card {
     x: number;
     y: number;
     cardfront: PIXI.Sprite;
-    mask: PIXI.Graphics;
+    cardback: PIXI.Sprite;
     rank: string;
     suit: string;
     faceUp: boolean;
-    cardback: PIXI.Sprite;
-    activeSprite: PIXI.Sprite;
     tl = gsap.timeline()
 
-    constructor(x: number, y: number, cardfront: PIXI.Sprite, name: string, mask: PIXI.Graphics, faceUp: boolean, cardback: PIXI.Sprite) {
+    constructor(x: number, y: number, cardfront: PIXI.Sprite, cardback: PIXI.Sprite, name: string, faceUp: boolean) {
         this.x = x;
         this.y = y;
         this.cardfront = cardfront;
@@ -27,29 +25,29 @@ export class Card {
         this.cardback.interactive = true;
         this.rank = name.split('')[1];
         this.suit = name.split('')[0];
-        this.mask = mask;
         this.faceUp = faceUp;
-        this.activeSprite = faceUp ? cardfront : cardback;
-        this.onClick();
+        faceUp ? this.activate() : this.deactivate();
+        this.attachEvents();
     }
 
     deactivate() {
-        console.log('deactivated')
         this.faceUp = false;
-        this.activeSprite = this.cardback;
+        this.cardfront.visible = false;
+        this.cardback.visible = true;
     }
 
     activate() {
         this.faceUp = true;
-        this.activeSprite = this.cardfront;
-        console.log(this.activeSprite)
+        this.cardfront.visible = true;
+        this.cardback.visible = false;
     }
 
-    onClick() {
-        this.activeSprite.on('pointertap', () => {
-            this.tl.to(this.activeSprite, { pixi: { skewY: 90, }, duration: 1, onComplete: () => this.activate() });
-            this.tl.set(this.activeSprite, { pixi: { skewY: -90 } })
-            this.tl.to(this.activeSprite, { pixi: { skewY: 0 }, duration: 1 });
-        })
+    attachEvents() {
+        this.cardback.on('pointertap', () => this.flip());
+    }
+
+    private flip() {
+        this.tl.to(this.cardback, { pixi: { scaleX: 0, }, duration: .5, onComplete: () => this.activate() });
+        this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0 } }, { pixi: { scaleX: 0.2 }, duration: .5 });
     }
 }
