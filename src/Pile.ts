@@ -14,9 +14,10 @@ export class StockPile {
         this.y = y;
         this.container = new PIXI.Container();
         this.container.interactive = true;
+        this.drawPile();
     }
 
-    drawPile(){
+    private drawPile(){
         const pileBorder = new PIXI.Graphics();
                 pileBorder.lineStyle(2, 0xFFCC00, 1);
                 pileBorder.drawRoundedRect(0, 0, 95, 140, 5);
