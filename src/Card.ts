@@ -14,7 +14,7 @@ export class Card {
     rank: string;
     suit: string;
     faceUp: boolean;
-    tl = gsap.timeline()
+    tl = gsap.timeline();
 
     constructor(x: number, y: number, cardfront: PIXI.Sprite, cardback: PIXI.Sprite, name: string, faceUp: boolean) {
         this.x = x;
