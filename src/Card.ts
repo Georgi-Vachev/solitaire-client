@@ -35,7 +35,6 @@ export class Card {
         this.cardfront.visible = false;
         this.cardback.visible = true;
     }
-
     activate() {
         this.faceUp = true;
         this.cardfront.visible = true;

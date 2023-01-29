@@ -1,7 +1,7 @@
 import { Connection } from "./Connection";
 import { engine } from "./engine";
 import * as PIXI from 'pixi.js';
-import { getSpritesheet } from "./util";
+import { initBundles } from "./util";
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 import { Card } from "./Card";
@@ -9,41 +9,31 @@ import { Card } from "./Card";
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
-
-
 const initForm = document.querySelector('form');
 const initSection = document.getElementById('init');
 const gameSection = document.getElementById('game');
 const app: PIXI.Application = createPixiApp();
 
+const bundles = (async () => await initBundles())();
+
 let connection = null;
 
-// initForm.addEventListener('submit', async event => {
-//     event.preventDefault();
-//     const { nickname } = Object.fromEntries(new FormData(event.target as HTMLFormElement));
+initForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const { nickname } = Object.fromEntries(new FormData(event.target as HTMLFormElement));
 
-//     connection = new Connection(nickname as string);
-//     await connection.open();
-//     engine(connection);
-//     showBoard();
+    connection = new Connection(nickname as string);
+    await connection.open();
+    engine(connection);
+    showBoard();
 
-//     connection.send('startGame');
-// });
+    connection.send('startGame');
+});
 
-// document.getElementById('disconnect').addEventListener('click', () => {
-//     connection?.disconnect();
-//     showInit();
-// });
-
-showBoard();
-function showBoard() {
-    initSection.style.display = 'none';
-    gameSection.style.display = 'block';
-
-    document.getElementById('board').appendChild(app.view as HTMLCanvasElement);
-    populateBoard();
-    outlinePiles(50, 15);
-}
+document.getElementById('disconnect').addEventListener('click', () => {
+    connection?.disconnect();
+    showInit();
+});
 
 function showInit() {
     initSection.style.display = 'block';
@@ -52,13 +42,19 @@ function showInit() {
     document.body.removeChild(app.view as HTMLCanvasElement);
 }
 
+async function showBoard() {
+    initSection.style.display = 'none';
+    gameSection.style.display = 'block';
+
+    document.getElementById('board').appendChild(app.view as HTMLCanvasElement);
+
+    populateBoard();
+    outlinePiles(50, 15);
+}
+
 function createPixiApp(): PIXI.Application {
     const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x00a000, antialias: true });
 
-    // (app.view as HTMLCanvasElement).style.position = 'absolute';
-    // (app.view as HTMLCanvasElement).style.left = '50%';
-    // (app.view as HTMLCanvasElement).style.top = '50%';
-    // (app.view as HTMLCanvasElement).style.transform = 'translate3d( -50%, -50%, 0 )';
     (app.view as HTMLCanvasElement).style.borderRadius = '30px';
     (app.view as HTMLCanvasElement).style.border = 'solid 2px #fff';
     (app.view as HTMLCanvasElement).style.boxShadow = '#333 0 0 7px';
@@ -68,14 +64,18 @@ function createPixiApp(): PIXI.Application {
 }
 
 async function populateBoard() {
-    const assets = await getSpritesheet(PIXI);
-    const spritesheet = assets.spritesheet;
+    const boardAssets = (await bundles).getBoardAssets();
+    const spritesheetAsset = (await boardAssets).spritesheet;
+    const cardbackAsset = (await boardAssets).cardback;
+
+    console.log(spritesheetAsset, cardbackAsset)
 
     let posX = 97.5;
 
-    for (let texture in spritesheet.textures) {
-        const cardfront = new PIXI.Sprite(spritesheet.textures[texture])
-        const cardback = new PIXI.Sprite(assets.cardbackTexture);
+    for (let texture in spritesheetAsset.textures) {
+        const cardfront = new PIXI.Sprite(spritesheetAsset.textures[texture])
+        const cardback = new PIXI.Sprite(cardbackAsset);
+        console.log(cardback)
         cardfront.anchor.set(0.5);
         cardback.anchor.set(0.5);
         cardfront.position.set(posX, 265);
@@ -90,7 +90,7 @@ async function populateBoard() {
         mask.endFill();
         cardfront.mask = mask;
         cardback.mask = mask;
-        const card = new Card(posX, 200, cardfront, cardback, texture, false)
+        const card = new Card(posX, 200, cardfront, cardback, texture, false);
         app.stage.addChild(card.cardfront, card.cardback);
         if (posX < 600) {
             posX += 100
@@ -120,18 +120,3 @@ function outlinePiles(x, y) {
 
 }
 
-
-// const testFront = PIXI.Sprite.from('assets/22331.jpg');
-// testFront.width = 80;
-// testFront.height = 120;
-// testFront.position.set(300, 500);
-// testFront.anchor.set(0.5, 0.5)
-
-
-
-
-// app.stage.addChild(testBack, testFront);
-
-// const tl = gsap.timeline();
-// tl.to(testFront, { pixi: { skewY: 90, }, duration: 1, delay: 1 });
-// tl.fromTo(testBack, { pixi: { skewY: -90 } }, { pixi: { skewY: 0 }, duration: 1 });
