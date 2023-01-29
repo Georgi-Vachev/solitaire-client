@@ -1,5 +1,11 @@
 import * as PIXI from 'pixi.js';
 
+let boardAssetsLoaded = false,
+    menuAssetsLoaded = false,
+    menuAssets,
+    spritesheet,
+    cardback
+
 export async function initBundles() {
 
     await PIXI.Assets.init({
@@ -47,88 +53,104 @@ export async function initBundles() {
 
     return {
         async getBoardAssets() {
-            const boardAssets = await PIXI.Assets.loadBundle(['cards', 'cardback'], (progress) => {
-                console.log(progress)
-            })
+            if (!boardAssetsLoaded) {
+                const boardAssets = await PIXI.Assets.loadBundle(['cards', 'cardback'], (progress) => {
+                    console.log(progress)
+                })
+                boardAssetsLoaded = true;
+                const cardsBundle = boardAssets.cards;
+                const cardbackBundle = boardAssets.cardback;
 
-            const cardsBundle = boardAssets.cards;
-            const cardbackBundle = boardAssets.cardback;
-
-            const atlasData = {
-                frames: [] as any,
-                meta: {
-                    image: '',
-                    format: 'RGBA8888',
-                    size: { w: 6000, h: 4000 },
-                    scale: '1'
+                const atlasData = {
+                    frames: [] as any,
+                    meta: {
+                        image: '',
+                        format: 'RGBA8888',
+                        size: { w: 6000, h: 4000 },
+                        scale: '1'
+                    }
                 }
-            }
 
-            const cards = [
-                ['CA', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK'],
-                ['HA', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK'],
-                ['SA', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK'],
-                ['DA', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK'],
-            ]
+                const cards = [
+                    ['CA', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK'],
+                    ['HA', 'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK'],
+                    ['SA', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK'],
+                    ['DA', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK'],
+                ]
 
-            for (let colorIndex = 0; colorIndex < cards.length; colorIndex++) {
-                const row = cards[colorIndex];
-                for (let offset = 0; offset < row.length; offset++) {
-                    const card = row[offset];
-                    const data = {
-                        frame: { x: (offset * 458) + 50, y: (colorIndex * 660) + 850, w: 407, h: 618 },
-                        sourceSize: { w: 407, h: 618 },
-                        spriteSourceize: { x: 0, y: 0, w: 407, h: 618 }
-                    };
-                    atlasData.frames[card] = data;
+                for (let colorIndex = 0; colorIndex < cards.length; colorIndex++) {
+                    const row = cards[colorIndex];
+                    for (let offset = 0; offset < row.length; offset++) {
+                        const card = row[offset];
+                        const data = {
+                            frame: { x: (offset * 458) + 50, y: (colorIndex * 660) + 850, w: 407, h: 618 },
+                            sourceSize: { w: 407, h: 618 },
+                            spriteSourceize: { x: 0, y: 0, w: 407, h: 618 }
+                        };
+                        atlasData.frames[card] = data;
+                    }
                 }
-            }
 
-            const spritesheet = new PIXI.Spritesheet(
-                new PIXI.Texture(cardsBundle.cardsTexture),
-                atlasData
-            );
+                spritesheet = new PIXI.Spritesheet(
+                    new PIXI.Texture(cardsBundle.cardsTexture),
+                    atlasData
+                );
 
-            await spritesheet.parse()
+                await spritesheet.parse()
 
-            const cardback = cardbackBundle.cardback;
+                cardback = cardbackBundle.cardback;
 
-            return {
-                cardback,
-                spritesheet,
+                return {
+                    cardback,
+                    spritesheet,
+                }
+            } else if (boardAssetsLoaded) {
+                return {
+                    cardback,
+                    spritesheet,
+                }
             }
         },
 
         async getMenuAssets() {
-            const menuAssets = await PIXI.Assets.loadBundle('blocks', (progress) => {
-                console.log(progress)
-            })
+            if (!menuAssetsLoaded) {
+                menuAssets = await PIXI.Assets.loadBundle('blocks', (progress) => {
+                    console.log(progress)
+                })
+                menuAssetsLoaded = true;
+                return menuAssets;
+            } else if (menuAssetsLoaded) {
+                return menuAssets;
+            }
 
-
-
-            return menuAssets;
         },
     }
 }
 
-export function createPixiApp(): PIXI.Application {
-    const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x00a000, antialias: true });
+export function createPixiApp(color: number, currentApp?: PIXI.Application): PIXI.Application {
+    if (currentApp) {
+        document.body.removeChild(currentApp.view as HTMLCanvasElement);
+    }
+    const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: color, antialias: true });
 
     (app.view as HTMLCanvasElement).style.borderRadius = '30px';
     (app.view as HTMLCanvasElement).style.border = 'solid 2px #fff';
     (app.view as HTMLCanvasElement).style.boxShadow = '#333 0 0 7px';
     (app.view as HTMLCanvasElement).style.margin = 'auto 0';
 
-
+    document.body.appendChild(app.view as HTMLCanvasElement)
     return app;
 }
 
 export type TCard = {
+    x: number;
+    y: number;
     cardfront: PIXI.Sprite;
     cardback: PIXI.Sprite;
     rank: string;
     suit: string;
     faceUp: boolean;
+    tl?: any
 }
 
 export function drawIndicator() {
@@ -246,3 +268,4 @@ export function createTiles(baseTexture: PIXI.BaseTexture): PIXI.Texture[][] {
 function getTexture(baseTexture: PIXI.BaseTexture, x: number, y: number, w: number, h: number) {
     return new PIXI.Texture(baseTexture, new PIXI.Rectangle(x, y, w, h))
 }
+

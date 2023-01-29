@@ -35,7 +35,24 @@ export class Card {
 
     private flip() {
         this.faceUp = true;
-        this.tl.to(this.cardback, { pixi: { scaleX: 0, }, duration: .5 });
-        this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0 } }, { pixi: { scaleX: 0.2 }, duration: .5 });
+        this.tl.to([this.cardback, this.cardfront], { pixi: { x: '+=50' } })
+        this.tl.to(this.cardback, { pixi: { scaleX: 0, x: '+=50' }, duration: .3, onUpdate: this.updateCardbackMask.bind(this) }, '<');
+        this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0, x: '+=50' } }, { pixi: { scaleX: 0.2, x: '+=50', onUpdate: this.updateCardfrontMask.bind(this) }, duration: 1 });
+    }
+
+    updateCardbackMask() {
+        const mask = new PIXI.Graphics();
+        mask.beginFill()
+        mask.drawRoundedRect(this.cardback.x + 10.5, this.cardback.y - 45, 80, 120, 6);
+        mask.endFill();
+        this.cardback.mask = mask;
+    }
+
+    updateCardfrontMask() {
+        const mask = new PIXI.Graphics();
+        mask.beginFill()
+        mask.drawRoundedRect(this.cardfront.x + 60.5, this.cardfront.y - 45, 80, 120, 6);
+        mask.endFill();
+        this.cardfront.mask = mask;
     }
 }

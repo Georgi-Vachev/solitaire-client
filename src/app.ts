@@ -1,28 +1,31 @@
 import { Connection } from "./Connection";
 import { engine } from "./engine";
 import * as PIXI from 'pixi.js';
-import { createPixiApp, initBundles, createSpritesContainer, createTiles, drawIndicator } from "./util";
+import { createPixiApp, initBundles, TCard, createSpritesContainer, createTiles, drawIndicator } from "./util";
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 import { Card } from "./Card";
-import { TextStyle } from "pixi.js";
 import { Button } from "./button";
 import { InputField } from "./inputField";
+import { StockPile } from "./Pile";
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
-const gameSection = document.getElementById('game');
-const app: PIXI.Application = createPixiApp();
-let usernameInputField;
-let username = '';
+const disconnectBtn: HTMLElement = document.getElementById('disconnect');
+let app: PIXI.Application = createPixiApp(0x00a000);
+let usernameInputField: InputField;
+let username: string = '';
 
 const bundles = initBundles();
+let menuAssets;
+
+let deck: TCard[] = [];
 
 let connection = null;
 welcomeScreen();
 
-document.getElementById('disconnect').addEventListener('click', () => {
+disconnectBtn.addEventListener('click', () => {
     connection?.disconnect();
     welcomeScreen();
 });
@@ -41,11 +44,10 @@ async function initConnection() {
 async function showBoard() {
     app.stage.removeChildren();
     app.ticker.remove(update);
-    gameSection.style.display = 'block';
+    disconnectBtn.style.display = 'block';
 
-    document.getElementById('board').appendChild(app.view as HTMLCanvasElement);
     populateBoard();
-    outlinePiles(50, 15);
+    //outlinePiles(50, 15);
 }
 
 async function populateBoard() {
@@ -60,26 +62,16 @@ async function populateBoard() {
         const cardback = new PIXI.Sprite(cardbackAsset);
         cardfront.anchor.set(0.5);
         cardback.anchor.set(0.5);
-        cardfront.position.set(posX, 265);
-        cardback.position.set(posX, 265);
         cardfront.width = 80;
         cardfront.height = 120;
         cardback.width = 80;
         cardback.height = 120;
-        const mask = new PIXI.Graphics();
-        mask.beginFill(0);
-        mask.drawRoundedRect(cardback.x - 40, cardback.y - 60, 80, 120, 6);
-        mask.endFill();
-        cardfront.mask = mask;
-        cardback.mask = mask;
-        const card = new Card(posX, 200, cardfront, cardback, texture, false);
-        app.stage.addChild(card.cardfront, card.cardback);
-        if (posX < 600) {
-            posX += 100
-        } else {
-            break;
-        }
+        const card = new Card(0, 200, cardfront, cardback, texture, false);
+        deck.push(card);
     }
+
+    const pile = new StockPile(deck, app, 97.5, 85);
+
 }
 
 function outlinePiles(x, y) {
@@ -99,14 +91,14 @@ function outlinePiles(x, y) {
         }
 
     }
-
 }
 
 async function welcomeScreen() {
-    app.stage.removeChildren();
-    document.body.appendChild(app.view as HTMLCanvasElement);
+    disconnectBtn.style.display = 'none';
+    app.stage.removeChildren()
+    username = '';
     //load textures
-    const menuAssets = await ((await bundles).getMenuAssets())
+    menuAssets = await ((await bundles).getMenuAssets())
     const bevelTexture = menuAssets.bevel;
     const hoverTexture = menuAssets.hover;
     const insetTexture = menuAssets.inset;
@@ -123,8 +115,6 @@ async function welcomeScreen() {
         createSpritesContainer(hoverTextures, 200, 50),
     )
 
-
-
     const startGameBtn = new Button(
         'Start Game',
         initConnection,
@@ -133,21 +123,18 @@ async function welcomeScreen() {
         createSpritesContainer(insetTextures, 150, 50)
     );
 
-    const welcomeMsg = new PIXI.Text('Welcome to Solitaire!', new TextStyle({
+    const welcomeMsg = new PIXI.Text("For when there's nothing else..", new PIXI.TextStyle({
+        align: "center",
         fontFamily: 'Arial',
-        fontSize: 35,
         fill: 0xd3daf5,
     }));
 
-    welcomeMsg.position.x = 222;
-    welcomeMsg.position.y = 50;
-
-
-    const usernameMsg = new PIXI.Text('Username', new TextStyle({
+    const usernameMsg = new PIXI.Text('Username', new PIXI.TextStyle({
         fontFamily: 'Arial',
         fontSize: 24,
         fill: 0xffffff
     }));
+    welcomeMsg.position.set(app.view.width / 2 - 160, app.view.height / 2 - 200)
 
     usernameMsg.position.set(app.view.width / 2 - 55, app.view.height / 2 - 75);
     usernameInputField.position.set(app.view.width / 2 - 100, app.view.height / 2 - 45);
@@ -157,7 +144,6 @@ async function welcomeScreen() {
 }
 
 document.addEventListener('keydown', (event) => {
-
     const usernameRegex = /^[\w]$/
     if (usernameInputField != undefined && usernameInputField.isSelected) {
         if (event.key.match(usernameRegex) && username.length <= 10) {
