@@ -123,9 +123,12 @@ export function createPixiApp(): PIXI.Application {
 }
 
 export type TCard = {
+    x: number;
+    y: number;
     cardfront: PIXI.Sprite;
     cardback: PIXI.Sprite;
     rank: string;
     suit: string;
     faceUp: boolean;
+    tl?: any
 }

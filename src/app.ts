@@ -1,10 +1,11 @@
 import { Connection } from "./Connection";
 import { engine } from "./engine";
 import * as PIXI from 'pixi.js';
-import { initBundles } from "./util";
+import { initBundles, TCard } from "./util";
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 import { Card } from "./Card";
+import { StockPile } from "./Pile";
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
@@ -15,6 +16,8 @@ const gameSection = document.getElementById('game');
 const app: PIXI.Application = createPixiApp();
 
 const bundles = (async () => await initBundles())();
+
+let deck: TCard[] = [];
 
 let connection = null;
 
@@ -49,7 +52,8 @@ async function showBoard() {
     document.getElementById('board').appendChild(app.view as HTMLCanvasElement);
 
     populateBoard();
-    outlinePiles(50, 15);
+    //outlinePiles(50, 15);
+
 }
 
 function createPixiApp(): PIXI.Application {
@@ -68,55 +72,41 @@ async function populateBoard() {
     const spritesheetAsset = (await boardAssets).spritesheet;
     const cardbackAsset = (await boardAssets).cardback;
 
-    console.log(spritesheetAsset, cardbackAsset)
-
     let posX = 97.5;
 
     for (let texture in spritesheetAsset.textures) {
         const cardfront = new PIXI.Sprite(spritesheetAsset.textures[texture])
         const cardback = new PIXI.Sprite(cardbackAsset);
-        console.log(cardback)
         cardfront.anchor.set(0.5);
         cardback.anchor.set(0.5);
-        cardfront.position.set(posX, 265);
-        cardback.position.set(posX, 265);
         cardfront.width = 80;
         cardfront.height = 120;
         cardback.width = 80;
         cardback.height = 120;
-        const mask = new PIXI.Graphics();
-        mask.beginFill(0);
-        mask.drawRoundedRect(cardback.x - 40, cardback.y - 60, 80, 120, 6);
-        mask.endFill();
-        cardfront.mask = mask;
-        cardback.mask = mask;
-        const card = new Card(posX, 200, cardfront, cardback, texture, false);
-        app.stage.addChild(card.cardfront, card.cardback);
-        if (posX < 600) {
-            posX += 100
-        } else {
-            break;
-        }
+        const card = new Card(0, 200, cardfront, cardback, texture, false);
+        deck.push(card);
     }
-}
 
-function outlinePiles(x, y) {
-    for (let i = x; i <= 650; i += 100) {
-        for (let j = y; j <= 220; j += 180) {
-            if (i == 250 && j == y) {
-                continue;
-            } else {
-                const pileBorder = new PIXI.Graphics();
-                pileBorder.lineStyle(2, 0xFFCC00, 1);
-                pileBorder.drawRoundedRect(0, 0, 95, 140, 5);
-                pileBorder.endFill();
-                pileBorder.position.set(i, j);
-                app.stage.addChild(pileBorder);
-            }
-
-        }
-
-    }
+    const pile = new StockPile(deck, app, 97.5, 85);
 
 }
 
+// function outlinePiles(x, y) {
+//     for (let i = x; i <= 650; i += 100) {
+//         for (let j = y; j <= 220; j += 180) {
+//             if (i == 250 && j == y) {
+//                 continue;
+//             } else {
+//                 const pileBorder = new PIXI.Graphics();
+//                 pileBorder.lineStyle(2, 0xFFCC00, 1);
+//                 pileBorder.drawRoundedRect(0, 0, 95, 140, 5);
+//                 pileBorder.endFill();
+//                 pileBorder.position.set(i, j);
+//                 app.stage.addChild(pileBorder);
+//             }
+
+//         }
+
+//     }
+
+// }

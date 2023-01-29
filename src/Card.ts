@@ -35,7 +35,8 @@ export class Card {
 
     private flip() {
         this.faceUp = true;
-        this.tl.to(this.cardback, { pixi: { scaleX: 0, }, duration: .5 });
+        //this.tl.to([this.cardback, this.cardfront], {pixi: {x: '+=50'}})
+        this.tl.to(this.cardback, { pixi: { scaleX: 0 }, duration: .5 });
         this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0 } }, { pixi: { scaleX: 0.2 }, duration: .5 });
     }
 }
