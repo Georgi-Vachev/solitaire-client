@@ -167,4 +167,3 @@ function update(dt) {
         elapsed = 0;
     }
 }
-
