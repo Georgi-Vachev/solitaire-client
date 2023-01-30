@@ -40,7 +40,7 @@ export class StockPile {
             card.cardfront.position.set(x, y);
             const mask = new PIXI.Graphics();
             mask.beginFill()
-            mask.drawRoundedRect(card.cardback.x + 10.5, card.cardback.y - 45, 80, 1000, 6);
+            mask.drawRoundedRect(card.cardback.x + 10.5, card.cardback.y - 45, 80, 120, 6);
             mask.endFill();
             card.cardfront.mask = mask;
             card.cardback.mask = mask;

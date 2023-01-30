@@ -1,10 +1,17 @@
 import * as PIXI from 'pixi.js';
+import { gsap } from 'gsap';
+import { PixiPlugin } from "gsap/PixiPlugin";
+
+gsap.registerPlugin(PixiPlugin);
+PixiPlugin.registerPIXI(PIXI);
 
 let boardAssetsLoaded = false,
     menuAssetsLoaded = false,
     menuAssets,
     spritesheet,
     cardback
+
+let currentApp: PIXI.Application;
 
 export async function initBundles() {
 
@@ -54,9 +61,20 @@ export async function initBundles() {
     return {
         async getBoardAssets() {
             if (!boardAssetsLoaded) {
+                const loadingBar = new PIXI.Graphics();
+                loadingBar.beginFill(0xFFFFFF)
+                loadingBar.drawRect(currentApp.view.width / 2 - 150, currentApp.view.height / 2 - 10, 300, 20);
+                loadingBar.beginFill(0xe3471b)
+                currentApp.stage.addChild(loadingBar);
                 const boardAssets = await PIXI.Assets.loadBundle(['cards', 'cardback'], (progress) => {
-                    console.log(progress)
+
+                    gsap.to(loadingBar, {
+                        pixi: { width: '-=300', x: '+=400' }, duration: progress
+                    })
+
                 })
+
+                currentApp.stage.removeChild(loadingBar);
                 boardAssetsLoaded = true;
                 const cardsBundle = boardAssets.cards;
                 const cardbackBundle = boardAssets.cardback;
@@ -127,9 +145,9 @@ export async function initBundles() {
     }
 }
 
-export function createPixiApp(color: number, currentApp?: PIXI.Application): PIXI.Application {
-    if (currentApp) {
-        document.body.removeChild(currentApp.view as HTMLCanvasElement);
+export function createPixiApp(color: number, oldApp?: PIXI.Application): PIXI.Application {
+    if (oldApp) {
+        document.body.removeChild(oldApp.view as HTMLCanvasElement);
     }
     const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: color, antialias: true });
 
@@ -137,14 +155,12 @@ export function createPixiApp(color: number, currentApp?: PIXI.Application): PIX
     (app.view as HTMLCanvasElement).style.border = 'solid 2px #fff';
     (app.view as HTMLCanvasElement).style.boxShadow = '#333 0 0 7px';
     (app.view as HTMLCanvasElement).style.margin = 'auto 0';
-
+    currentApp = app;
     document.body.appendChild(app.view as HTMLCanvasElement)
     return app;
 }
 
 export type TCard = {
-    x: number;
-    y: number;
     cardfront: PIXI.Sprite;
     cardback: PIXI.Sprite;
     rank: string;
