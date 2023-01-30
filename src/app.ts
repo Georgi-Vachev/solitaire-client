@@ -47,7 +47,6 @@ async function showBoard() {
     disconnectBtn.style.display = 'block';
 
     populateBoard();
-    outlinePiles(50, 15);
 }
 
 async function populateBoard() {

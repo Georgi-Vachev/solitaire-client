@@ -51,7 +51,7 @@ export class Card {
     updateCardfrontMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.parent.x + 60, this.cardfront.parent.y - 60, 80, 120, 6);
+        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 65, 80, 120, 6);
         mask.endFill();
         this.cardfront.mask = mask;
     }
