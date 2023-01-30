@@ -51,7 +51,7 @@ export class StockPile {
     }
 
     private onClickChecker() {
-        //TODO
+         console.log(this.container.children.length);
     }
     private reset(){
         //TODO
