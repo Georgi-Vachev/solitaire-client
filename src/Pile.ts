@@ -52,7 +52,20 @@ export class StockPile {
         }
     }
     private onClickChecker() {
-         console.log(this.container.children.length);
+        const cardOnTopBack = this.container.getChildAt(this.container.children.length - 1);
+        const cardOnTopFront = this.container.getChildAt(this.container.children.length - 2);
+
+        
+        const cardBelowBack = this.container.getChildAt(this.container.children.length - 3);
+        const cardBelowFront = this.container.getChildAt(this.container.children.length - 4);
+        
+        this.container.swapChildren(this.container.getChildAt(1), cardOnTopFront);
+        this.container.swapChildren(this.container.getChildAt(2), cardOnTopBack);
+
+        this.container.children.pop();
+        this.container.children.pop();
+        
+
     }
     private reset() {
         //TODO

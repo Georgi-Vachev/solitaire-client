@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
+import { app } from './app';
 
 
 gsap.registerPlugin(PixiPlugin);
@@ -41,17 +42,15 @@ export class Card {
     updateCardbackMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 6);
-
+        mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 7.5);
         mask.endFill();
-        console.log(this.cardback.parent.x, this.cardback.parent.y)
         this.cardback.mask = mask;
     }
 
     updateCardfrontMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 65, 80, 120, 6);
+        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 65, 82, 120, 7.5);
         mask.endFill();
         this.cardfront.mask = mask;
     }

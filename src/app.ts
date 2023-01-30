@@ -13,7 +13,7 @@ gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
 const disconnectBtn: HTMLElement = document.getElementById('disconnect');
-let app: PIXI.Application = createPixiApp(0x00a000);
+export let app: PIXI.Application = createPixiApp(0x00a000);
 let usernameInputField: InputField;
 let username: string = '';
 
@@ -66,11 +66,12 @@ async function populateBoard() {
         const card = new Card(cardfront, cardback, texture, false);
         deck.push(card);
     }
-    outlinePiles(85, 100)
+    const pile = new StockPile(deck, app, 85, 100);
+    //outlinePiles(85, 100)
 }
 
 function outlinePiles(x, y) {
-    for (let i = x; i <= 550; i += 105) {
+    for (let i = x; i <= 750; i += 105) {
         for (let j = y; j <= 280; j += 180) {
             if (i == 295 && j == y) {
                 continue;
