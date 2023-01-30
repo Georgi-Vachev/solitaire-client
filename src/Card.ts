@@ -32,7 +32,7 @@ export class Card {
         this.cardback.on('pointertap', () => this.flip());
     }
 
-    private flip() {
+    flip() {
         this.faceUp = true;
         this.tl.to([this.cardback, this.cardfront], { pixi: { x: '+=50' } })
         this.tl.to(this.cardback, { pixi: { scaleX: 0, x: '+=50' }, duration: .35, onUpdate: this.updateCardbackMask.bind(this) }, '<');
@@ -56,3 +56,7 @@ export class Card {
     }
 
 }
+
+/**
+ * TODO: Create draggin animation of cards that have a faceUp value of 'true'
+ */
