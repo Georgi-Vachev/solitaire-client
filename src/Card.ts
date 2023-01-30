@@ -24,6 +24,7 @@ export class Card {
         this.suit = name.split('')[0];
         this.faceUp = faceUp;
         this.attachEvents();
+
     }
 
     attachEvents() {
@@ -33,23 +34,26 @@ export class Card {
     private flip() {
         this.faceUp = true;
         this.tl.to([this.cardback, this.cardfront], { pixi: { x: '+=50' } })
-        this.tl.to(this.cardback, { pixi: { scaleX: 0, x: '+=50' }, duration: .3, onUpdate: this.updateCardbackMask.bind(this) }, '<');
-        this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0, x: '+=50' } }, { pixi: { scaleX: 0.2, x: '+=50', onUpdate: this.updateCardfrontMask.bind(this) }, duration: 1 });
+        this.tl.to(this.cardback, { pixi: { scaleX: 0, x: '+=50' }, duration: .35, onUpdate: this.updateCardbackMask.bind(this) }, '<');
+        this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0, x: '+=50' } }, { pixi: { scaleX: 0.2, x: '+=50' }, duration: 0.35, onUpdate: this.updateCardfrontMask.bind(this) });
     }
 
     updateCardbackMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardback.x + 10.5, this.cardback.y - 45, 80, 120, 6);
+        mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 6);
+
         mask.endFill();
+        console.log(this.cardback.parent.x, this.cardback.parent.y)
         this.cardback.mask = mask;
     }
 
     updateCardfrontMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.x + 60.5, this.cardfront.y - 45, 80, 120, 6);
+        mask.drawRoundedRect(this.cardfront.parent.x + 60, this.cardfront.parent.y - 60, 80, 120, 6);
         mask.endFill();
         this.cardfront.mask = mask;
     }
+
 }

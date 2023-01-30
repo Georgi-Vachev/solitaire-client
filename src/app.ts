@@ -55,8 +55,6 @@ async function populateBoard() {
     const spritesheetAsset = boardAssets.spritesheet;
     const cardbackAsset = boardAssets.cardback;
 
-    let posX = 97.5;
-
     for (let texture in spritesheetAsset.textures) {
         const cardfront = new PIXI.Sprite(spritesheetAsset.textures[texture])
         const cardback = new PIXI.Sprite(cardbackAsset);
@@ -69,27 +67,18 @@ async function populateBoard() {
         const card = new Card(cardfront, cardback, texture, false);
         deck.push(card);
     }
-
-    const pile = new StockPile(deck, app, 97.5, 85);
-
+    outlinePiles(85, 100)
 }
 
 function outlinePiles(x, y) {
-    for (let i = x; i <= 650; i += 100) {
-        for (let j = y; j <= 220; j += 180) {
-            if (i == 250 && j == y) {
+    for (let i = x; i <= 550; i += 105) {
+        for (let j = y; j <= 280; j += 180) {
+            if (i == 295 && j == y) {
                 continue;
             } else {
-                const pileBorder = new PIXI.Graphics();
-                pileBorder.lineStyle(2, 0xFFCC00, 1);
-                pileBorder.drawRoundedRect(0, 0, 95, 140, 5);
-                pileBorder.endFill();
-                pileBorder.position.set(i, j);
-                app.stage.addChild(pileBorder);
+                new StockPile(deck, app, i, j)
             }
-
         }
-
     }
 }
 
