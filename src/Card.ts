@@ -2,13 +2,12 @@ import * as PIXI from 'pixi.js'
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 
+
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
 export class Card {
 
-    x: number;
-    y: number;
     cardfront: PIXI.Sprite;
     cardback: PIXI.Sprite;
     rank: string;
@@ -16,9 +15,7 @@ export class Card {
     faceUp: boolean;
     tl = gsap.timeline();
 
-    constructor(x: number, y: number, cardfront: PIXI.Sprite, cardback: PIXI.Sprite, name: string, faceUp: boolean) {
-        this.x = x;
-        this.y = y;
+    constructor(cardfront: PIXI.Sprite, cardback: PIXI.Sprite, name: string, faceUp: boolean) {
         this.cardfront = cardfront;
         this.cardfront.interactive = true;
         this.cardback = cardback;
