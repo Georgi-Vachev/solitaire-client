@@ -33,16 +33,15 @@ export class StockPile {
     }
     public fill() {
         for (let card of this.deck) {
-            card.cardback.position.set(47.5, 70);
-            card.cardfront.position.set(47.5, 70);
+            card.cardback.position.set(this.container.pivot.x, this.container.pivot.y);
+            card.cardfront.position.set(this.container.pivot.x, this.container.pivot.y);
+            this.container.addChild(card.cardfront, card.cardback);
             const mask = new PIXI.Graphics();
             mask.beginFill()
-            mask.drawRoundedRect(card.cardback.x + 10.5, card.cardback.y - 45, 80, 120, 6);
+            mask.drawRoundedRect(this.container.x - 40, this.container.y - 60, 80, 120, 6);
             mask.endFill();
             card.cardfront.mask = mask;
             card.cardback.mask = mask;
-            this.container.addChild(card.cardfront, card.cardback);
         }
     }
-
 }

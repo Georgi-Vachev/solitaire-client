@@ -67,13 +67,11 @@ export async function initBundles() {
                 loadingBar.beginFill(0xe3471b)
                 currentApp.stage.addChild(loadingBar);
                 const boardAssets = await PIXI.Assets.loadBundle(['cards', 'cardback'], (progress) => {
-
                     gsap.to(loadingBar, {
                         pixi: { width: '-=300', x: '+=400' }, duration: progress
                     })
 
                 })
-
                 currentApp.stage.removeChild(loadingBar);
                 boardAssetsLoaded = true;
                 const cardsBundle = boardAssets.cards;
@@ -140,7 +138,6 @@ export async function initBundles() {
             } else if (menuAssetsLoaded) {
                 return menuAssets;
             }
-
         },
     }
 }
