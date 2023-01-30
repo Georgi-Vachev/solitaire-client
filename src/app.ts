@@ -66,7 +66,7 @@ async function populateBoard() {
         cardfront.height = 120;
         cardback.width = 80;
         cardback.height = 120;
-        const card = new Card(0, 200, cardfront, cardback, texture, false);
+        const card = new Card(cardfront, cardback, texture, false);
         deck.push(card);
     }
 
@@ -178,4 +178,3 @@ function update(dt) {
         elapsed = 0;
     }
 }
-
