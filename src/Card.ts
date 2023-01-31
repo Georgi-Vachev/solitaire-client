@@ -40,6 +40,7 @@ export class Card {
     updateCardbackMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
+        mask.drawRoundedRect(this.cardback.parent.x - 34, this.cardback.parent.y - 64, 80, 120, 6);
         mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 7.5);
         mask.endFill();
         this.cardback.mask = mask;
