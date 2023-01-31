@@ -41,12 +41,6 @@ export class StockPile {
             this.container.addChild(card.cardfront, card.cardback);
             card.cardback.position.set(x, y);
             card.cardfront.position.set(x, y);
-            const mask = new PIXI.Graphics();
-            mask.beginFill()
-            mask.drawRoundedRect(this.container.x - 40, this.container.y - 60, 80, 120, 6);
-            mask.endFill();
-            // card.cardfront.mask = mask;
-            //card.cardback.mask = mask;
             x += 0.1;
             y -= 0.1;
         }
