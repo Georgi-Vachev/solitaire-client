@@ -33,12 +33,10 @@ export class Card {
     }
 
     flip() {
-        this.faceUp = true;
-        this.tl.to([this.cardback, this.cardfront], { pixi: { x: '+=50' } })
-        this.tl.to(this.cardback, { pixi: { scaleX: 0, x: '+=50' }, duration: .35, onUpdate: this.updateCardbackMask.bind(this) }, '<');
-        this.tl.fromTo(this.cardfront, { pixi: { scaleX: 0, x: '+=50' } }, { pixi: { scaleX: 0.2, x: '+=50' }, duration: 0.35, onUpdate: this.updateCardfrontMask.bind(this) });
+        this.tl.to([this.cardback, this.cardfront], {pixi: {x: '+=100'}, duration: 0.3});
+        this.tl.to(this.cardback, {pixi: {skewY: 90}, duration: 0.3});
+        this.tl.fromTo(this.cardfront, {pixi: {skewY: -90}}, {pixi: {skewY: 0}, duration: 0.3, onComplete: () => this.updateCardfrontMask()}, '>-0.015')
     }
-
     updateCardbackMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
@@ -50,8 +48,9 @@ export class Card {
     updateCardfrontMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 65, 82, 120, 7.5);
+        mask.drawRoundedRect(this.cardfront.x - 2.5, this.cardfront.y - 30, 80, 120, 7.5);
         mask.endFill();
+        app.stage.addChild(mask);
         this.cardfront.mask = mask;
     }
 

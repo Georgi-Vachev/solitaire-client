@@ -99,9 +99,9 @@ export async function initBundles() {
                     for (let offset = 0; offset < row.length; offset++) {
                         const card = row[offset];
                         const data = {
-                            frame: { x: (offset * 458) + 50, y: (colorIndex * 660) + 850, w: 407, h: 618 },
-                            sourceSize: { w: 407, h: 618 },
-                            spriteSourceize: { x: 0, y: 0, w: 407, h: 618 }
+                            frame: { x: (offset * 458) + 55, y: (colorIndex * 660) + 855, w: 400, h: 610 },
+                            sourceSize: { w: 400, h: 610 },
+                            spriteSourceize: { x: 0, y: 0, w: 400, h: 610 }
                         };
                         atlasData.frames[card] = data;
                     }

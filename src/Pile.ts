@@ -45,8 +45,8 @@ export class StockPile {
             mask.beginFill()
             mask.drawRoundedRect(this.container.x - 40, this.container.y - 60, 80, 120, 6);
             mask.endFill();
-            card.cardfront.mask = mask;
-            card.cardback.mask = mask;
+            // card.cardfront.mask = mask;
+            //card.cardback.mask = mask;
             x += 0.1;
             y -= 0.1;
         }
@@ -65,7 +65,9 @@ export class StockPile {
         this.container.children.pop();
         this.container.children.pop();
         
-
+        // if (this.container.children.length < 1){
+        //     this.fill();
+        // }
     }
     private reset() {
         //TODO
