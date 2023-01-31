@@ -41,17 +41,15 @@ export class Card {
     updateCardbackMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 6);
-
+        mask.drawRoundedRect(this.cardback.parent.x - 34, this.cardback.parent.y - 64, 80, 120, 6);
         mask.endFill();
-        console.log(this.cardback.parent.x, this.cardback.parent.y)
         this.cardback.mask = mask;
     }
 
     updateCardfrontMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.parent.x + 60, this.cardfront.parent.y - 60, 80, 120, 6);
+        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 64, 80, 120, 6);
         mask.endFill();
         this.cardfront.mask = mask;
     }
