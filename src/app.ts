@@ -7,7 +7,7 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 import { Card } from "./Card";
 import { Button, InputField } from "./UI";
 
-import { StockPile } from "./Pile";
+import { StockPile } from "./StockPile";
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
