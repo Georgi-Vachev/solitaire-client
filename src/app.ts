@@ -5,8 +5,8 @@ import { createPixiApp, initBundles, TCard, createSpritesContainer, createTiles,
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 import { Card } from "./Card";
-import { Button } from "./button";
-import { InputField } from "./inputField";
+import { Button, InputField } from "./UI";
+
 import { StockPile } from "./Pile";
 
 gsap.registerPlugin(PixiPlugin);

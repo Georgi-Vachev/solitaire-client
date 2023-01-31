@@ -20,7 +20,7 @@ export class StockPile {
         this.app.stage.addChild(this.container);
         this.drawPile();
         this.fill();
-        this.container.on('pointertap', this.onClickChecker.bind(this));
+        // this.container.on('pointertap', this.onClickChecker.bind(this));
     }
 
     private drawPile() {
@@ -41,10 +41,10 @@ export class StockPile {
             this.container.addChild(card.cardfront, card.cardback);
             card.cardback.position.set(x, y);
             card.cardfront.position.set(x, y);
-            const mask = new PIXI.Graphics();
-            mask.beginFill()
-            mask.drawRoundedRect(this.container.x - 40, this.container.y - 60, 80, 120, 6);
-            mask.endFill();
+            // const mask = new PIXI.Graphics();
+            // mask.beginFill()
+            // mask.drawRoundedRect(this.container.x - 40, this.container.y - 60, 80, 120, 6);
+            // mask.endFill();
             // card.cardfront.mask = mask;
             //card.cardback.mask = mask;
             x += 0.1;
@@ -55,16 +55,16 @@ export class StockPile {
         const cardOnTopBack = this.container.getChildAt(this.container.children.length - 1);
         const cardOnTopFront = this.container.getChildAt(this.container.children.length - 2);
 
-        
+
         const cardBelowBack = this.container.getChildAt(this.container.children.length - 3);
         const cardBelowFront = this.container.getChildAt(this.container.children.length - 4);
-        
+
         this.container.swapChildren(this.container.getChildAt(1), cardOnTopFront);
         this.container.swapChildren(this.container.getChildAt(2), cardOnTopBack);
 
         this.container.children.pop();
         this.container.children.pop();
-        
+
         // if (this.container.children.length < 1){
         //     this.fill();
         // }
