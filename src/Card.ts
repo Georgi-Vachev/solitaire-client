@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
+import { app } from './app';
 
 
 gsap.registerPlugin(PixiPlugin);
@@ -31,7 +32,7 @@ export class Card {
         this.cardback.on('pointertap', () => this.flip());
     }
 
-    private flip() {
+    flip() {
         this.faceUp = true;
         this.tl.to([this.cardback, this.cardfront], { pixi: { x: '+=50' } })
         this.tl.to(this.cardback, { pixi: { scaleX: 0, x: '+=50' }, duration: .35, onUpdate: this.updateCardbackMask.bind(this) }, '<');
@@ -42,6 +43,7 @@ export class Card {
         const mask = new PIXI.Graphics();
         mask.beginFill()
         mask.drawRoundedRect(this.cardback.parent.x - 34, this.cardback.parent.y - 64, 80, 120, 6);
+        mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 7.5);
         mask.endFill();
         this.cardback.mask = mask;
     }
@@ -49,9 +51,13 @@ export class Card {
     updateCardfrontMask() {
         const mask = new PIXI.Graphics();
         mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 64, 80, 120, 6);
+        mask.drawRoundedRect(this.cardfront.parent.x + 65, this.cardfront.parent.y - 65, 82, 120, 7.5);
         mask.endFill();
         this.cardfront.mask = mask;
     }
 
 }
+
+/**
+ * TODO: Create draggin animation of cards that have a faceUp value of 'true'
+ */
