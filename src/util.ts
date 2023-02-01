@@ -63,12 +63,12 @@ export async function initBundles() {
             if (!boardAssetsLoaded) {
                 const loadingBar = new PIXI.Graphics();
                 loadingBar.beginFill(0xFFFFFF)
-                loadingBar.drawRect(currentApp.view.width / 2 - 150, currentApp.view.height / 2 - 10, 300, 20);
+                loadingBar.drawRect(currentApp.view.width / 2 - 150, currentApp.view.height / 2 - 10, 350, 20);
                 loadingBar.beginFill(0xe3471b)
                 currentApp.stage.addChild(loadingBar);
                 const boardAssets = await PIXI.Assets.loadBundle(['cards', 'cardback'], (progress) => {
                     gsap.to(loadingBar, {
-                        pixi: { width: '-=300', x: '+=400' }, duration: progress
+                        pixi: { width: '-=350', x: '+=440' }, duration: progress
                     })
 
                 })
@@ -131,7 +131,6 @@ export async function initBundles() {
         async getMenuAssets() {
             if (!menuAssetsLoaded) {
                 menuAssets = await PIXI.Assets.loadBundle('blocks', (progress) => {
-                    console.log(progress)
                 })
                 menuAssetsLoaded = true;
                 return menuAssets;
@@ -146,7 +145,7 @@ export function createPixiApp(color: number, oldApp?: PIXI.Application): PIXI.Ap
     if (oldApp) {
         document.body.removeChild(oldApp.view as HTMLCanvasElement);
     }
-    const app = new PIXI.Application({ width: 800, height: 600, backgroundColor: color, antialias: true });
+    const app = new PIXI.Application({ width: 880, height: 600, backgroundColor: color, antialias: true });
 
     (app.view as HTMLCanvasElement).style.borderRadius = '30px';
     (app.view as HTMLCanvasElement).style.border = 'solid 2px #fff';
@@ -281,4 +280,3 @@ export function createTiles(baseTexture: PIXI.BaseTexture): PIXI.Texture[][] {
 function getTexture(baseTexture: PIXI.BaseTexture, x: number, y: number, w: number, h: number) {
     return new PIXI.Texture(baseTexture, new PIXI.Rectangle(x, y, w, h))
 }
-

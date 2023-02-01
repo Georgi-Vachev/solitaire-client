@@ -1,28 +1,28 @@
-import { Connection } from "./Connection";
-import { engine } from "./engine";
 import * as PIXI from 'pixi.js';
-import { createPixiApp, initBundles, TCard, createSpritesContainer, createTiles, drawIndicator } from "./util";
-import { gsap } from 'gsap';
-import { PixiPlugin } from "gsap/PixiPlugin";
-import { Card } from "./Card";
-import { Button, InputField } from "./UI";
+import * as GSAP from 'gsap';
 
-import { StockPile } from "./StockPile";
-
-gsap.registerPlugin(PixiPlugin);
-PixiPlugin.registerPIXI(PIXI);
+// Import classes for the card, deck, piles, etc.
+import { Deck } from './deck';
+import { DrawPile } from './Piles/draw-pile';
+import { createPixiApp, createSpritesContainer, createTiles, drawIndicator, initBundles } from './util';
+import { Button, InputField } from './UI';
+import { WastePile } from './Piles/waste-pile';
+import { FoundationPile } from './Piles/foundation-pile';
+import { TablePile } from './Piles/table-pile';
 
 const disconnectBtn: HTMLElement = document.getElementById('disconnect');
-export let app: PIXI.Application = createPixiApp(0x00a000);
-let usernameInputField: InputField;
-let username: string = '';
+
+// Create the PIXI app
+const app = createPixiApp(0x00a000);
+document.body.appendChild(app.view as HTMLCanvasElement);
 
 const bundles = initBundles();
 let menuAssets;
 
-let deck: TCard[] = [];
-
 let connection = null;
+let usernameInputField: InputField;
+let username: string = '';
+
 welcomeScreen();
 
 disconnectBtn.addEventListener('click', () => {
@@ -50,36 +50,49 @@ async function showBoard() {
 }
 
 async function populateBoard() {
+    //load Assets
     const boardAssets = await ((await bundles).getBoardAssets());
     const spritesheetAsset = boardAssets.spritesheet;
     const cardbackAsset = boardAssets.cardback;
+    // Create the deck and piles
+    const deck = new Deck(spritesheetAsset, cardbackAsset);
+    const drawPile = new DrawPile(deck, 20, 20);
+    drawPile.container.interactive = true;
+    const wastePile = new WastePile(80, 20);
 
-    for (let texture in spritesheetAsset.textures) {
-        const cardfront = new PIXI.Sprite(spritesheetAsset.textures[texture])
-        const cardback = new PIXI.Sprite(cardbackAsset);
-        cardfront.anchor.set(0.5);
-        cardback.anchor.set(0.5);
-        cardfront.width = 80;
-        cardfront.height = 120;
-        cardback.width = 80;
-        cardback.height = 120;
-        const card = new Card(cardfront, cardback, texture, false);
-        deck.push(card);
-    }
-    const pile = new StockPile(deck, app, 85, 100);
-    //outlinePiles(85, 100)
-}
+    const foundationPiles = [
+        new FoundationPile('Hearts', 200, 20),
+        new FoundationPile('Spades', 260, 20),
+        new FoundationPile('Diamonds', 320, 20),
+        new FoundationPile('Clubs', 380, 20),
+    ];
+    const tableauPiles = [
+        new TablePile(20, 120),
+        new TablePile(80, 120),
+        new TablePile(140, 120),
+        new TablePile(200, 120),
+        new TablePile(260, 120),
+        new TablePile(320, 120),
+        new TablePile(380, 120),
+    ];
 
-function outlinePiles(x, y) {
-    for (let i = x; i <= 750; i += 105) {
-        for (let j = y; j <= 280; j += 180) {
-            if (i == 295 && j == y) {
-                continue;
-            } else {
-                new StockPile(deck, app, i, j)
-            }
-        }
-    }
+    // Add the deck and piles to the stage
+    app.stage.addChild(drawPile.container, wastePile.container);
+
+    foundationPiles.forEach((pile) => {
+        app.stage.addChild(pile.container);
+    });
+
+    tableauPiles.forEach((pile) => {
+        app.stage.addChild(pile.container);
+    });
+
+    // Draw a card from the Draw pile and store it in the Waste pile
+
+    wastePile.drawFromDrawPile(drawPile);
+    drawPile.container.on('pointertap', () => {
+        drawPile.getTopCard().flip(drawPile, wastePile);
+    });
 }
 
 async function welcomeScreen() {

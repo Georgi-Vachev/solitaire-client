@@ -1,94 +1,122 @@
 import * as PIXI from 'pixi.js'
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
-import { app } from './app';
+import { WastePile } from './Piles/waste-pile';
+import { DrawPile } from './Piles/draw-pile';
 
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
 export class Card {
-
-    cardfront: PIXI.Sprite;
-    cardback: PIXI.Sprite;
     rank: string;
     suit: string;
-    faceUp: boolean;
+    sprite: PIXI.Sprite;
+    frontTexture: PIXI.Texture;
+    backTexture: PIXI.Texture;
     private dragStartPosition: PIXI.Point;
     private isDragging: boolean;
-    tl = gsap.timeline();
+    private isFaceUp: boolean;
+    x: number;
+    y: number;
+    tl: gsap.core.Timeline;
 
-    constructor(cardfront: PIXI.Sprite, cardback: PIXI.Sprite, name: string, faceUp: boolean) {
-        this.cardfront = cardfront;
-        this.cardfront.interactive = true;
-        this.cardback = cardback;
-        this.cardback.interactive = true;
+    constructor(name: string, frontTexture: PIXI.Texture, backTexture: PIXI.Texture) {
         this.rank = name.split('')[1];
         this.suit = name.split('')[0];
-        this.faceUp = faceUp;
+        this.frontTexture = frontTexture;
+        this.backTexture = backTexture;
+        this.isFaceUp = false;
+        this.sprite = new PIXI.Sprite(backTexture);
+        this.sprite.anchor.set(.5)
+        this.sprite.width = 80;
+        this.sprite.height = 120;
+        this.sprite.interactive = true;
+        this.x = 0;
+        this.y = 0;
         this.isDragging = false;
         this.dragStartPosition = new PIXI.Point();
-        this.attachEvents();
-
-        this.cardfront.on("pointerdown", this.onPointerDown.bind(this));
-        this.cardfront.on("pointerup", this.onPointerUp.bind(this));
-        this.cardfront.on("pointerupoutside", this.onPointerUp.bind(this));
-        this.cardfront.on("pointermove", this.onPointerMove.bind(this));
-        this.cardback.on('pointertap', () => this.flip.bind(this));
+        this.tl = gsap.timeline();
+        this.sprite.on("pointerdown", this.onPointerDown.bind(this));
+        this.sprite.on("pointerup", this.onPointerUp.bind(this));
+        this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
+        this.sprite.on("pointermove", this.onPointerMove.bind(this));
     }
 
-
-
     private onPointerDown(event): void {
-        this.dragStartPosition.x = event.data.global.x - this.cardfront.x;
-        this.dragStartPosition.y = event.data.global.y - this.cardfront.y;
+        this.dragStartPosition.x = event.data.global.x - this.sprite.x;
+        this.dragStartPosition.y = event.data.global.y - this.sprite.y;
         this.isDragging = true;
     }
 
     private onPointerUp(event): void {
         this.isDragging = false;
-        this.cardfront.x = event.data.global.x - this.dragStartPosition.x;
-        this.cardfront.y = event.data.global.y - this.dragStartPosition.y;
-        console.log()
+        this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
+            event.data.global.y - this.dragStartPosition.y
+        )
     }
 
     private onPointerMove(event): void {
         if (this.isDragging) {
-            this.cardfront.x = event.data.global.x - this.dragStartPosition.x;
-            this.cardfront.y = event.data.global.y - this.dragStartPosition.y;
-            console.log(this.cardfront.x, this.cardfront.y)
+            this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
+                event.data.global.y - this.dragStartPosition.y
+            )
         }
     }
 
-    attachEvents() {
-        this.cardback.on('pointertap', () => this.flip());
+    updatePosition(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.sprite.position.set(x + 40, y + 60)
     }
 
-    flip() {
-        this.tl.to([this.cardback, this.cardfront], { pixi: { x: '+=100' }, duration: 0.3 });
-        this.tl.to(this.cardback, { pixi: { skewY: 90 }, duration: 0.3 });
-        this.tl.fromTo(this.cardfront, { pixi: { skewY: -90 } }, { pixi: { skewY: 0 }, duration: 0.3 }, '>-0.015')
-    }
-    updateCardbackMask() {
-        const mask = new PIXI.Graphics();
-        mask.beginFill()
-        mask.drawRoundedRect(this.cardback.parent.x - 34, this.cardback.parent.y - 64, 80, 120, 6);
-        mask.drawRoundedRect(this.cardback.parent.x - 40, this.cardback.parent.y - 60, 80, 120, 7.5);
-        mask.endFill();
-        this.cardback.mask = mask;
+    public getX(): number {
+        return this.x;
     }
 
-    updateCardfrontMask() {
-        const mask = new PIXI.Graphics();
-        mask.beginFill()
-        mask.drawRoundedRect(this.cardfront.x - 2.5, this.cardfront.y - 30, 80, 120, 7.5);
-        mask.endFill();
-        app.stage.addChild(mask);
-        this.cardfront.mask = mask;
+    public setX(x: number): void {
+        this.x = x;
+        this.sprite.x = x;
+    }
+
+    public getY(): number {
+        return this.y;
+    }
+
+    public setY(y: number): void {
+        this.y = y;
+        this.sprite.y = y;
+    }
+
+    public flip(drawPile: DrawPile, wastePile: WastePile): void {
+
+        this.tl.to(this.sprite, {
+            pixi: { skewY: 90, x: '+=60' }, duration: 0.5, onComplete: () => {
+                this.turnFaceUp();
+            }
+        })
+
+        this.tl.to(this.sprite, {
+            pixi: { skewY: 0, x: '+=60' }, duration: 0.5, onComplete: () => {
+                wastePile.drawFromDrawPile(drawPile);
+            }
+        })
+
+    }
+
+    isFacingUp(): boolean {
+        return this.isFaceUp;
+    }
+    isFaceDown(): boolean {
+        return !this.isFaceUp;
+    }
+    turnFaceUp() {
+        this.isFaceUp = true;
+        this.sprite.texture = this.isFaceUp ? this.frontTexture : this.backTexture;
+    }
+
+    turnFaceDown() {
+        this.isFaceUp = false;
     }
 
 }
-
-/**
- * TODO: Create draggin animation of cards that have a faceUp value of 'true'
- */
