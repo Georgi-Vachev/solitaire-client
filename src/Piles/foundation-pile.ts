@@ -32,15 +32,22 @@ export class FoundationPile extends Pile {
         const card = wastePile.getTopCard();
         if (card != undefined){
             if (card.isDragging){
-                //wastePile.removeCard(card);
+                wastePile.removeCard(card);
                 this.cards.push(card)
-                //card.sprite.anchor.set(0.5, 0.5);
+                card.sprite.anchor.set(0.5, 0.5);
                 card.sprite.position.set(240, 80)
                 this.container.addChild(card.sprite);
+                let x = 240;
+                let y = 70;
                 card.isDragging = false;
-                console.log(`card x: ${card.sprite.x} card y: ${card.sprite.y}`);
-                console.log('containerX:' + this.container.x, 'containerY:' + this.container.y);
-                console.log('containerWidth:' + this.container.width, 'containerHeight' + this.container.height)
+                for (let i = 1;i < this.container.children.length; i++){
+                    const child = this.container.children[i];
+                    child.position.set(x, y);
+                    y += 5;
+                };
+                //console.log(`card x: ${card.sprite.x} card y: ${card.sprite.y}`);
+                //console.log('containerX:' + this.container.x, 'containerY:' + this.container.y);
+                //console.log('containerWidth:' + this.container.width, 'containerHeight' + this.container.height)
             }
         }
         
