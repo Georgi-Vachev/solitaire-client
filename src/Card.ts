@@ -3,8 +3,10 @@ import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 import { WastePile } from './Piles/waste-pile';
 import { DrawPile } from './Piles/draw-pile';
+import { FoundationPile } from './Piles/foundation-pile';
+import { Draggable } from 'gsap/Draggable'
 
-
+gsap.registerPlugin(Draggable);
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
@@ -15,7 +17,7 @@ export class Card {
     frontTexture: PIXI.Texture;
     backTexture: PIXI.Texture;
     private dragStartPosition: PIXI.Point;
-    private isDragging: boolean;
+    isDragging: boolean;
     private isFaceUp: boolean;
     x: number;
     y: number;
@@ -45,12 +47,19 @@ export class Card {
     }
 
     private onPointerDown(event): void {
+        // this.sprite.x = event.data.global.x - this.sprite.x;
+        // this.sprite.y = event.data.global.y - this.sprite.y;
+        // this.isDragging = true;
         this.dragStartPosition.x = event.data.global.x - this.sprite.x;
         this.dragStartPosition.y = event.data.global.y - this.sprite.y;
         this.isDragging = true;
     }
 
     private onPointerUp(event): void {
+        // this.sprite.x = event.data.global.x - this.sprite.x;
+        // this.sprite.y = event.data.global.y - this.sprite.y;
+        // this.isDragging = false;
+
         this.isDragging = false;
         this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
             event.data.global.y - this.dragStartPosition.y
@@ -58,6 +67,11 @@ export class Card {
     }
 
     private onPointerMove(event): void {
+        // if (this.isDragging){
+        //     this.sprite.x = event.data.global.x - this.sprite.x;
+        //     this.sprite.y = event.data.global.y - this.sprite.y;
+        // }
+
         if (this.isDragging) {
             this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
                 event.data.global.y - this.dragStartPosition.y

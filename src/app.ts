@@ -47,8 +47,8 @@ async function showBoard() {
 
     populateBoard();
 }
-
-async function populateBoard() {
+export let wastePile: WastePile;
+export async function populateBoard() {
     //load Assets
     const boardAssets = await ((await bundles).getBoardAssets());
     const spritesheetAsset = boardAssets.spritesheet;
@@ -57,7 +57,7 @@ async function populateBoard() {
     const deck = new Deck(spritesheetAsset, cardbackAsset);
     const drawPile = new DrawPile(deck, 20, 20);
     drawPile.container.interactive = true;
-    const wastePile = new WastePile(80, 20);
+    wastePile = new WastePile(80, 20);
 
     const foundationPiles = [
         new FoundationPile('Hearts', 200, 20),
@@ -79,6 +79,12 @@ async function populateBoard() {
     app.stage.addChild(drawPile.container, wastePile.container);
 
     foundationPiles.forEach((pile) => {
+        pile.container.interactive = true;
+        const placeholder = new PIXI.Graphics();
+        placeholder.beginFill(0x000000, .5);
+        placeholder.drawRoundedRect(pile.container.x, pile.container.y, 80, 120, 5);
+        placeholder.alpha = 0;
+        pile.container.addChild(placeholder);
         app.stage.addChild(pile.container);
     });
 
@@ -106,6 +112,8 @@ async function populateBoard() {
     drawPile.container.on('pointertap', () => {
         drawPile.getTopCard().flip(drawPile, wastePile);
     });
+
+    return wastePile
 }
 
 async function welcomeScreen() {

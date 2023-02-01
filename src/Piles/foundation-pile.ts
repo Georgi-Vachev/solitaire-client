@@ -1,5 +1,8 @@
 import { Pile } from './pile';
 import { Card } from '../Card';
+import { WastePile } from './waste-pile';
+import * as PIXI from 'pixi.js';
+import { populateBoard, wastePile } from '../app';
 
 export class FoundationPile extends Pile {
     private readonly suit: string;
@@ -10,17 +13,40 @@ export class FoundationPile extends Pile {
         this.container.x = x;
         this.container.y = y;
         this.outline(this.container.x - 7, this.container.y - 10);
+        this.container.on('pointerup', this.drawFromWastePile.bind(this));
     }
 
     public addCard(card: Card) {
         if (this.cards.length === 0 && card.rank === 'A') {
+            this.container.addChild(card.sprite);
             return super.addCard(card);
         } else if (this.cards.length > 0 && card.suit === this.suit &&
             card.rank === this.getTopCard().rank + 1) {
+            this.container.addChild(card.sprite);              
             return super.addCard(card);
         } else {
             return false;
         }
+    }
+    public async drawFromWastePile(){
+        const card = wastePile.getTopCard();
+        if (card != undefined){
+            if (card.isDragging){
+                //wastePile.removeCard(card);
+                this.cards.push(card)
+                //card.sprite.anchor.set(0.5, 0.5);
+                card.sprite.position.set(240, 80)
+                this.container.addChild(card.sprite);
+                card.isDragging = false;
+                console.log(`card x: ${card.sprite.x} card y: ${card.sprite.y}`);
+                console.log('containerX:' + this.container.x, 'containerY:' + this.container.y);
+                console.log('containerWidth:' + this.container.width, 'containerHeight' + this.container.height)
+            }
+        }
+        
+    }
+    private updateChildren(){
+        
     }
 }
 

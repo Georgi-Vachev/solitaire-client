@@ -22,7 +22,6 @@ export class WastePile extends Pile {
     public getTopCard(): Card {
         return this.cards[this.cards.length - 1];
     }
-
 }
 
 //the WastePile class extends the Pile class, so it has all of the same methods and properties as the Pile class.
