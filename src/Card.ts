@@ -37,6 +37,7 @@ export class Card {
         this.isDragging = false;
         this.dragStartPosition = new PIXI.Point();
         this.tl = gsap.timeline();
+
         this.sprite.on("pointerdown", this.onPointerDown.bind(this));
         this.sprite.on("pointerup", this.onPointerUp.bind(this));
         this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
@@ -102,6 +103,18 @@ export class Card {
             }
         })
 
+    }
+
+    public flipOnTablePile(): void {
+
+        this.tl.to(this.sprite, {
+            pixi: { scaleX: 0 }, duration: 0.5, onComplete: () => {
+                this.turnFaceUp();
+            }
+        })
+        this.tl.to(this.sprite, {
+            pixi: { scaleX: 0.2 }, duration: 0.5
+        })
     }
 
     isFacingUp(): boolean {

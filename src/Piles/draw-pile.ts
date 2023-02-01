@@ -27,7 +27,6 @@ export class DrawPile extends Pile {
         const card = this.deck.drawCard();
         if (card) {
             this.removeCard(card);
-            this.emit(CardMovedEvent, card);
         }
         return card;
     }

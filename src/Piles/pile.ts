@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js'
 
 export const CardMovedEvent = "card-moved";
 
-export class Pile extends EventEmitter {
+export class Pile {
     public cards: Card[] = [];
     public x: number;
     public y: number;

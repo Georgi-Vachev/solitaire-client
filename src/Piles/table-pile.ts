@@ -14,6 +14,13 @@ export class TablePile extends Pile {
 
     addCard(card: Card) {
         this.cards.push(card);
+        this.container.addChild(card.sprite);
+        const currentIndex = this.cards.indexOf(card);
+        card.updatePosition(this.container.x, this.container.y + currentIndex * 15);
+        for (let card of this.cards) {
+            card.sprite.interactive = false;
+        }
+        card.sprite.interactive = true;
     }
 
     removeCard(card: Card) {

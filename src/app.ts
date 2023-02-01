@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import * as GSAP from 'gsap';
 
 // Import classes for the card, deck, piles, etc.
 import { Deck } from './deck';
@@ -67,13 +66,13 @@ async function populateBoard() {
         new FoundationPile('Clubs', 380, 20),
     ];
     const tableauPiles = [
-        new TablePile(20, 120),
-        new TablePile(80, 120),
-        new TablePile(140, 120),
-        new TablePile(200, 120),
-        new TablePile(260, 120),
-        new TablePile(320, 120),
-        new TablePile(380, 120),
+        new TablePile(20, 100),
+        new TablePile(80, 100),
+        new TablePile(140, 100),
+        new TablePile(200, 100),
+        new TablePile(260, 100),
+        new TablePile(320, 100),
+        new TablePile(380, 100),
     ];
 
     // Add the deck and piles to the stage
@@ -86,6 +85,20 @@ async function populateBoard() {
     tableauPiles.forEach((pile) => {
         app.stage.addChild(pile.container);
     });
+
+    // Draw the respective number of card and add them across the table piles
+    for (let tp = 1; tp <= 6; tp++) {
+        for (let card = 0; card <= tp; card++) {
+            const card = drawPile.drawCard();
+            tableauPiles[tp].addCard(card)
+            card.sprite.on('pointertap', () => {
+                if (card.isFaceDown()) {
+                    card.flipOnTablePile();
+                }
+
+            })
+        }
+    }
 
     // Draw a card from the Draw pile and store it in the Waste pile
 
