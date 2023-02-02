@@ -48,7 +48,8 @@ async function showBoard() {
     populateBoard();
 }
 export let wastePile: WastePile;
-export async function populateBoard() {
+
+async function populateBoard() {
     //load Assets
     const boardAssets = await ((await bundles).getBoardAssets());
     const spritesheetAsset = boardAssets.spritesheet;
@@ -97,34 +98,32 @@ export async function populateBoard() {
         for (let cardi = 0; cardi <= tp; cardi++) {
             const card = drawPile.drawCard();
             tableauPiles[tp].addCard(card)
-            if (cardi == tp){
+            if (cardi == tp) {
                 card.flipOnTablePile();
             }
             card.sprite.on('pointertap', () => {
                 if (card.isFaceDown()) {
-                    
                     card.flipOnTablePile();
                 }
-
             })
         }
     }
 
     // Draw a card from the Draw pile and store it in the Waste pile
 
-    wastePile.drawFromDrawPile(drawPile);
+    drawPile.getTopCard().flip(drawPile, wastePile);
+
     drawPile.container.on('pointertap', () => {
         drawPile.getTopCard().flip(drawPile, wastePile);
     });
-
-    return wastePile
 }
 
 async function welcomeScreen() {
     disconnectBtn.style.display = 'none';
     app.stage.removeChildren()
     username = '';
-    //load textures
+
+    // Load textures
     menuAssets = await ((await bundles).getMenuAssets())
     const bevelTexture = menuAssets.bevel;
     const hoverTexture = menuAssets.hover;

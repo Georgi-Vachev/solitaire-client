@@ -17,6 +17,7 @@ export class Card {
     frontTexture: PIXI.Texture;
     backTexture: PIXI.Texture;
     private dragStartPosition: PIXI.Point;
+    private flipped: boolean = false;
     isDragging: boolean;
     private isFaceUp: boolean;
     x: number;
@@ -39,11 +40,6 @@ export class Card {
         this.isDragging = false;
         this.dragStartPosition = new PIXI.Point();
         this.tl = gsap.timeline();
-
-        this.sprite.on("pointerdown", this.onPointerDown.bind(this));
-        this.sprite.on("pointerup", this.onPointerUp.bind(this));
-        this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
-        this.sprite.on("pointermove", this.onPointerMove.bind(this));
     }
 
     private onPointerDown(event): void {
@@ -104,19 +100,20 @@ export class Card {
     }
 
     public flip(drawPile: DrawPile, wastePile: WastePile): void {
+        if (!this.flipped) {
+            this.flipped = true;
+            this.tl.to(this.sprite, {
+                pixi: { skewY: 45, x: '+=60' }, duration: 0.25, onComplete: () => {
+                    this.turnFaceUp();
+                }
+            })
 
-        this.tl.to(this.sprite, {
-            pixi: { skewY: 90, x: '+=60' }, duration: 0.5, onComplete: () => {
-                this.turnFaceUp();
-            }
-        })
-
-        this.tl.to(this.sprite, {
-            pixi: { skewY: 0, x: '+=60' }, duration: 0.5, onComplete: () => {
-                wastePile.drawFromDrawPile(drawPile);
-            }
-        })
-
+            this.tl.to(this.sprite, {
+                pixi: { skewY: 0, x: '+=60' }, duration: 0.25, onComplete: () => {
+                    wastePile.drawFromDrawPile(drawPile);
+                }
+            })
+        }
     }
 
     public flipOnTablePile(): void {
@@ -140,6 +137,10 @@ export class Card {
     turnFaceUp() {
         this.isFaceUp = true;
         this.sprite.texture = this.isFaceUp ? this.frontTexture : this.backTexture;
+        this.sprite.on("pointerdown", this.onPointerDown.bind(this));
+        this.sprite.on("pointerup", this.onPointerUp.bind(this));
+        this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
+        this.sprite.on("pointermove", this.onPointerMove.bind(this));
     }
 
     turnFaceDown() {

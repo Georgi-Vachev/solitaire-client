@@ -3,7 +3,7 @@ import { Card } from "../Card";
 import { Deck } from "../deck";
 
 export class DrawPile extends Pile {
-    private deck: Deck;
+    public deck: Deck;
 
     constructor(deck: Deck, x: number, y: number) {
         super();
@@ -16,7 +16,9 @@ export class DrawPile extends Pile {
 
     private init() {
         this.deck.shuffle();
-        for (const card of this.deck.getCards()) {
+        for (let i = this.deck.getCards().length - 1; i >= 0; i--) {
+            const card = this.deck.cards[i];
+            console.log(card)
             card.turnFaceDown();
             card.updatePosition(this.container.x, this.container.y);
             this.addCard(card);
@@ -29,5 +31,14 @@ export class DrawPile extends Pile {
             this.removeCard(card);
         }
         return card;
+    }
+
+    public addCard(card: Card): void {
+        this.cards.push(card);
+        this.container.addChild(card.sprite)
+    }
+
+    public getTopCard(): Card {
+        return this.cards[this.cards.length - 1];
     }
 }

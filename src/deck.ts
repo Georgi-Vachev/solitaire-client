@@ -19,7 +19,6 @@ export class Deck {
         if (this.currentCardIndex >= this.cards.length) {
             return null;
         }
-
         return this.cards[this.currentCardIndex++];
     }
 
@@ -31,6 +30,12 @@ export class Deck {
         for (let i = this.cards.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+        }
+    }
+    removeCard(card: Card) {
+        const index = this.cards.indexOf(card);
+        if (index > -1) {
+            this.cards.splice(index, 1);
         }
     }
 }

@@ -1,8 +1,6 @@
 import { Pile } from './pile';
 import { Card } from '../Card';
-import { WastePile } from './waste-pile';
-import * as PIXI from 'pixi.js';
-import { populateBoard, wastePile } from '../app';
+import { wastePile } from '../app';
 
 export class FoundationPile extends Pile {
     private readonly suit: string;
@@ -22,23 +20,23 @@ export class FoundationPile extends Pile {
             return super.addCard(card);
         } else if (this.cards.length > 0 && card.suit === this.suit &&
             card.rank === this.getTopCard().rank + 1) {
-            this.container.addChild(card.sprite);              
+            this.container.addChild(card.sprite);
             return super.addCard(card);
         } else {
             return false;
         }
     }
-    public async drawFromWastePile(){
+    public async drawFromWastePile() {
         const card = wastePile.getTopCard();
-        if (card != undefined){
-            if (card.isDragging){
+        if (card != undefined) {
+            if (card.isDragging) {
                 wastePile.removeCard(card);
                 this.cards.push(card)
                 card.sprite.anchor.set(0.5, 0.5);
                 card.sprite.position.set(240, 80)
                 this.container.addChild(card.sprite);
                 card.isDragging = false;
-                for (let i = 1;i < this.container.children.length; i++){
+                for (let i = 1; i < this.container.children.length; i++) {
                     const child = this.container.children[i];
                     child.position.set(this.container.x + 40, this.container.y + 60);
                 };
@@ -47,10 +45,10 @@ export class FoundationPile extends Pile {
                 //console.log('containerWidth:' + this.container.width, 'containerHeight' + this.container.height)
             }
         }
-        
+
     }
-    private updateChildren(){
-        
+    private updateChildren() {
+
     }
 }
 
