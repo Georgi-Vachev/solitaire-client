@@ -37,13 +37,10 @@ export class FoundationPile extends Pile {
                 card.sprite.anchor.set(0.5, 0.5);
                 card.sprite.position.set(240, 80)
                 this.container.addChild(card.sprite);
-                let x = 240;
-                let y = 70;
                 card.isDragging = false;
                 for (let i = 1;i < this.container.children.length; i++){
                     const child = this.container.children[i];
-                    child.position.set(x, y);
-                    y += 5;
+                    child.position.set(this.container.x + 40, this.container.y + 60);
                 };
                 //console.log(`card x: ${card.sprite.x} card y: ${card.sprite.y}`);
                 //console.log('containerX:' + this.container.x, 'containerY:' + this.container.y);
