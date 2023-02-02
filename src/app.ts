@@ -94,11 +94,15 @@ export async function populateBoard() {
 
     // Draw the respective number of card and add them across the table piles
     for (let tp = 1; tp <= 6; tp++) {
-        for (let card = 0; card <= tp; card++) {
+        for (let cardi = 0; cardi <= tp; cardi++) {
             const card = drawPile.drawCard();
             tableauPiles[tp].addCard(card)
+            if (cardi == tp){
+                card.flipOnTablePile();
+            }
             card.sprite.on('pointertap', () => {
                 if (card.isFaceDown()) {
+                    
                     card.flipOnTablePile();
                 }
 
@@ -190,7 +194,7 @@ document.addEventListener('keydown', (event) => {
 })
 
 //create update function and add it to the app ticker 
-app.ticker.add(update);
+//app.ticker.add(update);
 
 let elapsed = 0;
 
