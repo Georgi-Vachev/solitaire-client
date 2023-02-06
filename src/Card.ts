@@ -5,6 +5,7 @@ import { WastePile } from './Piles/waste-pile';
 import { DrawPile } from './Piles/draw-pile';
 import { FoundationPile } from './Piles/foundation-pile';
 import { Draggable } from 'gsap/Draggable'
+import { FederatedPointerEvent } from 'pixi.js';
 
 gsap.registerPlugin(Draggable);
 gsap.registerPlugin(PixiPlugin);
@@ -42,7 +43,7 @@ export class Card {
         this.tl = gsap.timeline();
     }
 
-    private onPointerDown(event): void {
+    private onPointerDown(event: FederatedPointerEvent): void {
         // this.sprite.x = event.data.global.x - this.sprite.x;
         // this.sprite.y = event.data.global.y - this.sprite.y;
         // this.isDragging = true;
@@ -51,7 +52,7 @@ export class Card {
         this.isDragging = true;
     }
 
-    private onPointerUp(event): void {
+    private onPointerUp(event: FederatedPointerEvent): void {
         // this.sprite.x = event.data.global.x - this.sprite.x;
         // this.sprite.y = event.data.global.y - this.sprite.y;
         // this.isDragging = false;
@@ -62,7 +63,7 @@ export class Card {
         )
     }
 
-    private onPointerMove(event): void {
+    private onPointerMove(event: FederatedPointerEvent): void {
         // if (this.isDragging){
         //     this.sprite.x = event.data.global.x - this.sprite.x;
         //     this.sprite.y = event.data.global.y - this.sprite.y;
