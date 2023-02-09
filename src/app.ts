@@ -9,7 +9,6 @@ import { WastePile } from './Piles/waste-pile';
 import { FoundationPile } from './Piles/foundation-pile';
 import { TablePile } from './Piles/table-pile';
 import { Connection } from './Connection';
-import { engine } from './engine';
 
 const disconnectBtn: HTMLElement = document.getElementById('disconnect');
 
@@ -24,6 +23,8 @@ let connection = null;
 let usernameInputField: InputField;
 let username: string = '';
 
+let state = {};
+
 welcomeScreen();
 
 disconnectBtn.addEventListener('click', () => {
@@ -32,21 +33,20 @@ disconnectBtn.addEventListener('click', () => {
 });
 
 async function initConnection() {
-
     connection = new Connection(username as string);
     await connection.open();
-    engine(connection);
-
+    await connection.on('state', (newState) => {
+        state = newState;
+        showBoard();
+    });
     connection.send('startGame');
-
-    showBoard();
 }
 
 async function showBoard() {
+    console.log(state)
     app.stage.removeChildren();
     app.ticker.remove(update);
     disconnectBtn.style.display = 'block';
-
     populateBoard();
 }
 export let wastePile: WastePile;

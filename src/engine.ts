@@ -1,15 +1,8 @@
 import { Connection } from "./Connection";
 
+export async function engine(connection: Connection) {
+    let state = {};
+    connection.on('state', (newState) => { state = newState });
 
-const actionSection = document.getElementById('action');
-const boardSection = document.getElementById('board');
-
-export function engine(connection: Connection) {
-    const state = {};
-
-    connection.on('state', onState);
-
-    function onState(state) {
-        console.log('received state', state);
-    }
+    return state;
 }
