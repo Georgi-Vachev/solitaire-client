@@ -8,6 +8,8 @@ import { Button, InputField } from './UI';
 import { WastePile } from './Piles/waste-pile';
 import { FoundationPile } from './Piles/foundation-pile';
 import { TablePile } from './Piles/table-pile';
+import { Connection } from './Connection';
+import { engine } from './engine';
 
 const disconnectBtn: HTMLElement = document.getElementById('disconnect');
 
@@ -31,11 +33,11 @@ disconnectBtn.addEventListener('click', () => {
 
 async function initConnection() {
 
-    // connection = new Connection(username as string);
-    // await connection.open();
-    // engine(connection);
+    connection = new Connection(username as string);
+    await connection.open();
+    engine(connection);
 
-    // connection.send('startGame');
+    connection.send('startGame');
 
     showBoard();
 }

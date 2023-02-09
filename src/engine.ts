@@ -7,9 +7,6 @@ const boardSection = document.getElementById('board');
 export function engine(connection: Connection) {
     const state = {};
 
-    actionSection.innerHTML = '';
-    boardSection.innerHTML = '';
-
     connection.on('state', onState);
 
     function onState(state) {

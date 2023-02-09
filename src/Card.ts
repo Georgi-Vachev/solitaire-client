@@ -20,6 +20,7 @@ export class Card {
     private dragStartPosition: PIXI.Point;
     private flipped: boolean = false;
     isDragging: boolean;
+    currentContainerIndex: number;
     private isFaceUp: boolean;
     x: number;
     y: number;
@@ -50,17 +51,20 @@ export class Card {
         this.dragStartPosition.x = event.data.global.x - this.sprite.x;
         this.dragStartPosition.y = event.data.global.y - this.sprite.y;
         this.isDragging = true;
+        this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent)
     }
 
     private onPointerUp(event: FederatedPointerEvent): void {
         // this.sprite.x = event.data.global.x - this.sprite.x;
         // this.sprite.y = event.data.global.y - this.sprite.y;
         // this.isDragging = false;
-
         this.isDragging = false;
-        this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
-            event.data.global.y - this.dragStartPosition.y
-        )
+        if ([1, 2, 3, 4, 5].includes(this.currentContainerIndex)) {
+            this.updatePosition(this.sprite.parent.x, this.sprite.parent.y)
+        } else if ([6, 7, 8, 9, 10, 11, 12].includes(this.currentContainerIndex)) {
+            const currentIndex = this.sprite.parent.children.indexOf(this.sprite);
+            this.updatePosition(this.sprite.parent.x, this.sprite.parent.y + (currentIndex - 1) * 15);
+        }
     }
 
     private onPointerMove(event: FederatedPointerEvent): void {

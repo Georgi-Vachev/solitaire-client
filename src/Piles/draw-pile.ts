@@ -18,7 +18,6 @@ export class DrawPile extends Pile {
         this.deck.shuffle();
         for (let i = this.deck.getCards().length - 1; i >= 0; i--) {
             const card = this.deck.cards[i];
-            console.log(card)
             card.turnFaceDown();
             card.updatePosition(this.container.x, this.container.y);
             this.addCard(card);
