@@ -23,7 +23,70 @@ let connection = null;
 let usernameInputField: InputField;
 let username: string = '';
 
-let state = {};
+interface State {
+    foundations: {
+        clubs: {
+            cards: [],
+            suit: "clubs",
+            type: "foundation"
+        },
+        diamonds: {
+            cards: [],
+            suit: "diamonds",
+            type: "foundation"
+        },
+        hearts: {
+            cards: [],
+            suit: "hearts",
+            type: "foundation"
+        },
+        spades: {
+            cards: [],
+            suit: "spades",
+            type: "foundation"
+        }
+    },
+    piles: [
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+        {
+            cards: Array<{ face: number, suit: string, faceUp: boolean }>,
+            type: 'pile'
+        },
+    ],
+    stock: {
+        cards: []
+        type: "stock"
+    },
+    waste: {
+        cards: []
+        type: "waste"
+    },
+}
+
+let state: State;
 
 welcomeScreen();
 
@@ -35,7 +98,7 @@ disconnectBtn.addEventListener('click', () => {
 async function initConnection() {
     connection = new Connection(username as string);
     await connection.open();
-    await connection.on('state', (newState) => {
+    await connection.on('state', (newState: State) => {
         state = newState;
         showBoard();
     });
@@ -57,7 +120,7 @@ async function populateBoard() {
     const spritesheetAsset = boardAssets.spritesheet;
     const cardbackAsset = boardAssets.cardback;
     // Create the deck and piles
-    const deck = new Deck(spritesheetAsset, cardbackAsset);
+    const deck = new Deck(cardbackAsset);
     const drawPile = new DrawPile(deck, 20, 20);
     drawPile.container.interactive = true;
     wastePile = new WastePile(80, 20);
@@ -96,12 +159,14 @@ async function populateBoard() {
     });
 
     // Draw the respective number of card and add them across the table piles
-    for (let tp = 1; tp <= 6; tp++) {
+    for (let tp = 0; tp <= 6; tp++) {
         for (let cardi = 0; cardi <= tp; cardi++) {
             const card = drawPile.drawCard();
             tableauPiles[tp].addCard(card)
             if (cardi == tp) {
-                card.flipOnTablePile();
+                const info = state.piles[tp].cards[cardi]
+                const cardFrontTexture = spritesheetAsset.textures[info.suit[0].toUpperCase() + String(info.face)]
+                card.reveal(info, cardFrontTexture)
             }
             card.sprite.on('pointertap', () => {
                 if (card.isFaceDown()) {
@@ -113,10 +178,14 @@ async function populateBoard() {
 
     // Draw a card from the Draw pile and store it in the Waste pile
 
-    drawPile.getTopCard().flip(drawPile, wastePile);
-
-    drawPile.container.on('pointertap', () => {
-        drawPile.getTopCard().flip(drawPile, wastePile);
+    drawPile.container.on('pointertap', async () => {
+        await connection.send('move', { action: 'flip', source: 'stock', target: null });
+        connection.on('moveResult', (result) => {
+            const card = drawPile.getTopCard();
+            const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
+            card.reveal(result, cardFrontTexture)
+            card.flip(drawPile, wastePile);
+        })
     });
 }
 

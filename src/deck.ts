@@ -5,12 +5,12 @@ export class Deck {
     cards: Card[];
     private currentCardIndex: number;
 
-    constructor(cardTextures: any, backTexture: PIXI.Texture) {
+    constructor(backTexture: PIXI.Texture) {
         this.cards = [];
         this.currentCardIndex = 0;
 
-        for (const texture in cardTextures.textures) {
-            const card = new Card(texture, cardTextures.textures[texture], backTexture);
+        for (let i = 0; i <= 51; i++) {
+            const card = new Card(backTexture);
             this.cards.push(card);
         }
     }

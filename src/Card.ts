@@ -12,7 +12,7 @@ gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
 export class Card {
-    rank: string;
+    rank: number;
     suit: string;
     sprite: PIXI.Sprite;
     frontTexture: PIXI.Texture;
@@ -26,10 +26,7 @@ export class Card {
     y: number;
     tl: gsap.core.Timeline;
 
-    constructor(name: string, frontTexture: PIXI.Texture, backTexture: PIXI.Texture) {
-        this.rank = name.split('')[1];
-        this.suit = name.split('')[0];
-        this.frontTexture = frontTexture;
+    constructor(backTexture: PIXI.Texture) {
         this.backTexture = backTexture;
         this.isFaceUp = false;
         this.sprite = new PIXI.Sprite(backTexture);
@@ -78,6 +75,13 @@ export class Card {
                 event.data.global.y - this.dragStartPosition.y
             )
         }
+    }
+
+    reveal(info: { face: number, suit: string, faceUp: boolean }, frontTexture: PIXI.Texture) {
+        this.frontTexture = frontTexture
+        this.rank = info.face;
+        this.suit = info.suit;
+        this.turnFaceUp();
     }
 
     updatePosition(x: number, y: number) {

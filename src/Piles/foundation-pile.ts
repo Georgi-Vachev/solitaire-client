@@ -15,7 +15,7 @@ export class FoundationPile extends Pile {
     }
 
     public addCard(card: Card) {
-        if (this.cards.length === 0 && card.rank === 'A') {
+        if (this.cards.length === 0 && card.rank === 1) {
             this.container.addChild(card.sprite);
             return super.addCard(card);
         } else if (this.cards.length > 0 && card.suit === this.suit &&
