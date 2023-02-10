@@ -4,7 +4,6 @@ const style = new TextStyle({
     fontFamily: 'Arial',
     fontSize: 24,
     fill: 0xffffff,
-
 });
 
 export class InputField extends Container {

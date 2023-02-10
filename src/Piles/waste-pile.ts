@@ -11,7 +11,6 @@ export class WastePile extends Pile {
     }
 
     public drawFromDrawPile(drawPile: DrawPile): Card {
-
         let drawnCard: Card = drawPile.drawCard();
         this.addCard(drawnCard);
         drawnCard.turnFaceUp();

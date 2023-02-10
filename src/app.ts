@@ -178,14 +178,22 @@ async function populateBoard() {
 
     // Draw a card from the Draw pile and store it in the Waste pile
 
+    drawPile.resetText.on('pointertap', () => {
+        if (drawPile.cards.length == 0) {
+            drawPile.repopulate(wastePile);
+        }
+    })
+
     drawPile.container.on('pointertap', async () => {
-        await connection.send('move', { action: 'flip', source: 'stock', target: null });
-        connection.on('moveResult', (result) => {
-            const card = drawPile.getTopCard();
-            const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
-            card.reveal(result, cardFrontTexture)
-            card.flip(drawPile, wastePile);
-        })
+        if (drawPile.cards.length > 0) {
+            await connection.send('move', { action: 'flip', source: 'stock', target: null });
+            connection.on('moveResult', (result) => {
+                const card = drawPile.getTopCard();
+                const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
+                card.reveal(result, cardFrontTexture)
+                card.flip(drawPile, wastePile);
+            })
+        }
     });
 }
 
