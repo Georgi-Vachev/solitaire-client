@@ -1,13 +1,13 @@
 import * as PIXI from 'pixi.js';
 
 // Import classes for the card, deck, piles, etc.
-import { Deck } from './deck';
-import { DrawPile } from './Piles/draw-pile';
+import { Deck } from './Deck';
+import { DrawPile } from './Piles/Draw-pile';
 import { createPixiApp, createSpritesContainer, createTiles, drawIndicator, initBundles } from './util';
 import { Button, InputField } from './UI';
-import { WastePile } from './Piles/waste-pile';
-import { FoundationPile } from './Piles/foundation-pile';
-import { TablePile } from './Piles/table-pile';
+import { WastePile } from './Piles/Waste-pile';
+import { FoundationPile } from './Piles/Foundation-pile';
+import { TablePile } from './Piles/Table-pile';
 import { Connection } from './Connection';
 
 const disconnectBtn: HTMLElement = document.getElementById('disconnect');
@@ -106,7 +106,6 @@ async function initConnection() {
 }
 
 async function showBoard() {
-    console.log(state)
     app.stage.removeChildren();
     app.ticker.remove(update);
     disconnectBtn.style.display = 'block';
@@ -178,14 +177,8 @@ async function populateBoard() {
 
     // Draw a card from the Draw pile and store it in the Waste pile
 
-    drawPile.resetText.on('pointertap', () => {
-        if (drawPile.cards.length == 0) {
-            drawPile.repopulate(wastePile);
-        }
-    })
-
     drawPile.container.on('pointertap', async () => {
-        if (drawPile.cards.length > 0) {
+        if (drawPile.cards.length > 0 && !drawPile.repopulated) {
             await connection.send('move', { action: 'flip', source: 'stock', target: null });
             connection.on('moveResult', (result) => {
                 const card = drawPile.getTopCard();
@@ -193,6 +186,11 @@ async function populateBoard() {
                 card.reveal(result, cardFrontTexture)
                 card.flip(drawPile, wastePile);
             })
+        } else if (drawPile.cards.length == 0) {
+            drawPile.repopulate(wastePile);
+        } else if (drawPile.cards.length > 0 && drawPile.repopulated) {
+            const card = drawPile.getTopCard();
+            card.flip(drawPile, wastePile);
         }
     });
 }

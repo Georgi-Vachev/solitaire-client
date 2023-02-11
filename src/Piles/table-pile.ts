@@ -1,5 +1,5 @@
 import { Card } from '../Card';
-import { Pile } from './pile';
+import { Pile } from './Pile';
 
 export class TablePile extends Pile {
     cards: Card[];

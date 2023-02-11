@@ -1,4 +1,4 @@
-import { Pile } from './pile';
+import { Pile } from './Pile';
 import { Card } from '../Card';
 import { wastePile } from '../app';
 

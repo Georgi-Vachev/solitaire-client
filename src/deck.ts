@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js'
 
 export class Deck {
     cards: Card[];
-    private currentCardIndex: number;
+    currentCardIndex: number;
 
     constructor(backTexture: PIXI.Texture) {
         this.cards = [];

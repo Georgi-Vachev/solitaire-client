@@ -1,10 +1,11 @@
-import { Pile } from "./pile";
+import { Pile } from "./Pile";
 import { Card } from "../Card";
-import { Deck } from "../deck";
+import { Deck } from "../Deck";
 import * as PIXI from "pixi.js"
 
 export class DrawPile extends Pile {
     public deck: Deck;
+    public repopulated: boolean = false;
     resetText: PIXI.Text;
 
     constructor(deck: Deck, x: number, y: number) {
@@ -57,6 +58,15 @@ export class DrawPile extends Pile {
     }
 
     repopulate(wastePile) {
-        console.log(wastePile.cards)
+        this.repopulated = true;
+        for (let i = wastePile.cards.length; i > 0; i--) {
+            const card = wastePile.getTopCard();
+            wastePile.removeCard(card);
+            card.turnFaceDown();
+            card.flipped = false;
+            this.addCard(card);
+            card.updatePosition(this.container.x, this.container.y);
+        }
+        console.log(wastePile.cards.length, this.cards.length)
     }
 }

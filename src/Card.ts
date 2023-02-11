@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js'
 import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
-import { WastePile } from './Piles/waste-pile';
-import { DrawPile } from './Piles/draw-pile';
-import { FoundationPile } from './Piles/foundation-pile';
+import { WastePile } from './Piles/Waste-pile';
+import { DrawPile } from './Piles/Draw-pile';
+import { FoundationPile } from './Piles/Foundation-pile';
 import { Draggable } from 'gsap/Draggable'
 import { FederatedPointerEvent } from 'pixi.js';
 
@@ -45,22 +45,26 @@ export class Card {
         // this.sprite.x = event.data.global.x - this.sprite.x;
         // this.sprite.y = event.data.global.y - this.sprite.y;
         // this.isDragging = true;
-        this.dragStartPosition.x = event.data.global.x - this.sprite.x;
-        this.dragStartPosition.y = event.data.global.y - this.sprite.y;
-        this.isDragging = true;
-        this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent)
+        if (this.isFaceUp) {
+            this.dragStartPosition.x = event.data.global.x - this.sprite.x;
+            this.dragStartPosition.y = event.data.global.y - this.sprite.y;
+            this.isDragging = true;
+            this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent)
+        }
     }
 
     private onPointerUp(event: FederatedPointerEvent): void {
         // this.sprite.x = event.data.global.x - this.sprite.x;
         // this.sprite.y = event.data.global.y - this.sprite.y;
         // this.isDragging = false;
-        this.isDragging = false;
-        if ([1, 2, 3, 4, 5].includes(this.currentContainerIndex)) {
-            this.updatePosition(this.sprite.parent.x, this.sprite.parent.y)
-        } else if ([6, 7, 8, 9, 10, 11, 12].includes(this.currentContainerIndex)) {
-            const currentIndex = this.sprite.parent.children.indexOf(this.sprite);
-            this.updatePosition(this.sprite.parent.x, this.sprite.parent.y + (currentIndex - 1) * 15);
+        if (this.isFaceUp) {
+            this.isDragging = false;
+            if ([1, 2, 3, 4, 5].includes(this.currentContainerIndex)) {
+                this.updatePosition(this.sprite.parent.x, this.sprite.parent.y)
+            } else if ([6, 7, 8, 9, 10, 11, 12].includes(this.currentContainerIndex)) {
+                const currentIndex = this.sprite.parent.children.indexOf(this.sprite);
+                this.updatePosition(this.sprite.parent.x, this.sprite.parent.y + (currentIndex - 1) * 15);
+            }
         }
     }
 
@@ -69,11 +73,12 @@ export class Card {
         //     this.sprite.x = event.data.global.x - this.sprite.x;
         //     this.sprite.y = event.data.global.y - this.sprite.y;
         // }
-
-        if (this.isDragging) {
-            this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
-                event.data.global.y - this.dragStartPosition.y
-            )
+        if (this.isFaceUp) {
+            if (this.isDragging) {
+                this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
+                    event.data.global.y - this.dragStartPosition.y
+                )
+            }
         }
     }
 
@@ -119,7 +124,8 @@ export class Card {
 
             this.tl.to(this.sprite, {
                 pixi: { skewY: 0, x: '+=60' }, duration: 0.25, onComplete: () => {
-                    wastePile.drawFromDrawPile(drawPile);
+                    console.log(this)
+                    wastePile.drawFromDrawPile(drawPile, this);
                 }
             })
         }
@@ -154,6 +160,7 @@ export class Card {
 
     turnFaceDown() {
         this.isFaceUp = false;
+        this.sprite.texture = this.isFaceUp ? this.frontTexture : this.backTexture;
     }
 
 }
