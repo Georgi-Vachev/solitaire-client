@@ -13,6 +13,7 @@ export class DrawPile extends Pile {
         this.container.x = x;
         this.container.y = y;
         this.drawResetText();
+        this.type = 'stock';
         this.outline(this.container.x - 7, this.container.y - 10);
         this.deck = deck;
         this.init();

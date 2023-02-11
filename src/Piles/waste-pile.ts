@@ -7,6 +7,7 @@ export class WastePile extends Pile {
         super();
         this.container.x = x;
         this.container.y = y;
+        this.type = 'waste';
         this.outline(this.container.x - 7, this.container.y - 10);
     }
 

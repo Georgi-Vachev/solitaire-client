@@ -19,9 +19,10 @@ document.body.appendChild(app.view as HTMLCanvasElement);
 const bundles = initBundles();
 let menuAssets;
 
-let connection = null;
+export let connection = null;
 let usernameInputField: InputField;
 let username: string = '';
+export let foundationPiles;
 
 interface State {
     foundations: {
@@ -87,6 +88,8 @@ interface State {
 }
 
 let state: State;
+let availableMoves;
+export let target = null;
 
 welcomeScreen();
 
@@ -96,10 +99,11 @@ disconnectBtn.addEventListener('click', () => {
 });
 
 async function initConnection() {
-    connection = new Connection(username as string);
+    connection = new Connection(username);
     await connection.open();
     await connection.on('state', (newState: State) => {
         state = newState;
+        console.log(state)
         showBoard();
     });
     connection.send('startGame');
@@ -124,20 +128,20 @@ async function populateBoard() {
     drawPile.container.interactive = true;
     wastePile = new WastePile(80, 20);
 
-    const foundationPiles = [
+    foundationPiles = [
         new FoundationPile('Hearts', 200, 20),
         new FoundationPile('Spades', 260, 20),
         new FoundationPile('Diamonds', 320, 20),
         new FoundationPile('Clubs', 380, 20),
     ];
     const tableauPiles = [
-        new TablePile(20, 100),
-        new TablePile(80, 100),
-        new TablePile(140, 100),
-        new TablePile(200, 100),
-        new TablePile(260, 100),
-        new TablePile(320, 100),
-        new TablePile(380, 100),
+        new TablePile(20, 100, 'pile0'),
+        new TablePile(80, 100, 'pile1'),
+        new TablePile(140, 100, 'pile2'),
+        new TablePile(200, 100, 'pile3'),
+        new TablePile(260, 100, 'pile4'),
+        new TablePile(320, 100, 'pile5'),
+        new TablePile(380, 100, 'pile6'),
     ];
 
     // Add the deck and piles to the stage
@@ -175,17 +179,25 @@ async function populateBoard() {
         }
     }
 
+    connection.on('moves', (moves) => {
+        availableMoves = moves;
+    })
+
+    connection.on('moveResult', (result) => {
+        if (typeof result != 'boolean') {
+            console.log(result)
+            const card = drawPile.getTopCard();
+            const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
+            card.reveal(result, cardFrontTexture)
+            card.flip(drawPile, wastePile);
+        }
+    })
+
     // Draw a card from the Draw pile and store it in the Waste pile
 
     drawPile.container.on('pointertap', async () => {
         if (drawPile.cards.length > 0 && !drawPile.repopulated) {
             await connection.send('move', { action: 'flip', source: 'stock', target: null });
-            connection.on('moveResult', (result) => {
-                const card = drawPile.getTopCard();
-                const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
-                card.reveal(result, cardFrontTexture)
-                card.flip(drawPile, wastePile);
-            })
         } else if (drawPile.cards.length == 0) {
             drawPile.repopulate(wastePile);
         } else if (drawPile.cards.length > 0 && drawPile.repopulated) {

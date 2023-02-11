@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import { Card } from "../Card";
+import { target } from "../app";
 import * as PIXI from 'pixi.js'
 
 export const CardMovedEvent = "card-moved";
@@ -8,6 +9,7 @@ export class Pile {
     public cards: Card[] = [];
     public x: number;
     public y: number;
+    public type: string;
     container = new PIXI.Container();
 
     public addCard(card: Card): void {

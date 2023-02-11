@@ -10,6 +10,7 @@ export class FoundationPile extends Pile {
         this.suit = suit;
         this.container.x = x;
         this.container.y = y;
+        this.type = 'foundation';
         this.outline(this.container.x - 7, this.container.y - 10);
         this.container.on('pointerup', this.drawFromWastePile.bind(this));
     }

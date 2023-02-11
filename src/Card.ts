@@ -3,10 +3,10 @@ import { gsap } from 'gsap';
 import { PixiPlugin } from "gsap/PixiPlugin";
 import { WastePile } from './Piles/Waste-pile';
 import { DrawPile } from './Piles/Draw-pile';
-import { FoundationPile } from './Piles/Foundation-pile';
 import { Draggable } from 'gsap/Draggable'
 import { FederatedPointerEvent } from 'pixi.js';
-
+import { foundationPiles } from './app';
+import { connection } from './app';
 gsap.registerPlugin(Draggable);
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
@@ -17,14 +17,15 @@ export class Card {
     sprite: PIXI.Sprite;
     frontTexture: PIXI.Texture;
     backTexture: PIXI.Texture;
-    private dragStartPosition: PIXI.Point;
-    private flipped: boolean = false;
     isDragging: boolean;
     currentContainerIndex: number;
-    private isFaceUp: boolean;
     x: number;
     y: number;
     tl: gsap.core.Timeline;
+    pileIndex: number;
+    private dragStartPosition: PIXI.Point;
+    private flipped: boolean = false;
+    private isFaceUp: boolean;
 
     constructor(backTexture: PIXI.Texture) {
         this.backTexture = backTexture;
@@ -42,21 +43,52 @@ export class Card {
     }
 
     private onPointerDown(event: FederatedPointerEvent): void {
-        // this.sprite.x = event.data.global.x - this.sprite.x;
-        // this.sprite.y = event.data.global.y - this.sprite.y;
-        // this.isDragging = true;
         if (this.isFaceUp) {
             this.dragStartPosition.x = event.data.global.x - this.sprite.x;
             this.dragStartPosition.y = event.data.global.y - this.sprite.y;
             this.isDragging = true;
-            this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent)
+            this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent);
+            this.pileIndex = this.sprite.parent.children.length - 2
+            let currentSource;
+            switch (this.currentContainerIndex) {
+                case 1:
+                    currentSource = 'stock'
+                    break;
+                case 6:
+                    currentSource = 'pile0'
+                    break;
+                case 7:
+                    currentSource = 'pile1'
+                    break;
+                case 8:
+                    currentSource = 'pile2'
+                    break;
+                case 9:
+                    currentSource = 'pile3'
+                    break;
+                case 10:
+                    currentSource = 'pile4'
+                    break;
+                case 11:
+                    currentSource = 'pile5'
+                    break;
+                case 12:
+                    currentSource = 'pile6'
+                    break;
+                default:
+                    break;
+            }
+
+            connection.send('move', {
+                action: 'take',
+                source: currentSource,
+                target: null,
+                index: this.pileIndex
+            })
         }
     }
 
     private onPointerUp(event: FederatedPointerEvent): void {
-        // this.sprite.x = event.data.global.x - this.sprite.x;
-        // this.sprite.y = event.data.global.y - this.sprite.y;
-        // this.isDragging = false;
         if (this.isFaceUp) {
             this.isDragging = false;
             if ([1, 2, 3, 4, 5].includes(this.currentContainerIndex)) {
@@ -69,10 +101,6 @@ export class Card {
     }
 
     private onPointerMove(event: FederatedPointerEvent): void {
-        // if (this.isDragging){
-        //     this.sprite.x = event.data.global.x - this.sprite.x;
-        //     this.sprite.y = event.data.global.y - this.sprite.y;
-        // }
         if (this.isFaceUp) {
             if (this.isDragging) {
                 this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
@@ -124,7 +152,6 @@ export class Card {
 
             this.tl.to(this.sprite, {
                 pixi: { skewY: 0, x: '+=60' }, duration: 0.25, onComplete: () => {
-                    console.log(this)
                     wastePile.drawFromDrawPile(drawPile, this);
                 }
             })
