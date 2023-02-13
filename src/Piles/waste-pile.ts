@@ -9,6 +9,7 @@ export class WastePile extends Pile {
         this.container.y = y;
         this.type = 'waste';
         this.outline(this.container.x - 7, this.container.y - 10);
+
     }
 
     public drawFromDrawPile(drawPile: DrawPile, card: Card): Card {

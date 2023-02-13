@@ -20,9 +20,15 @@ const bundles = initBundles();
 let menuAssets;
 
 export let connection = null;
+let selectedCard;
+let targetedPile;
 let usernameInputField: InputField;
 let username: string = '';
-export let foundationPiles;
+let foundationPiles;
+let tableauPiles;
+let deck;
+let cardTaken = false;
+
 
 interface State {
     foundations: {
@@ -88,8 +94,7 @@ interface State {
 }
 
 let state: State;
-let availableMoves;
-export let target = null;
+export let availableMoves;
 
 welcomeScreen();
 
@@ -111,7 +116,6 @@ async function initConnection() {
 
 async function showBoard() {
     app.stage.removeChildren();
-    app.ticker.remove(update);
     disconnectBtn.style.display = 'block';
     populateBoard();
 }
@@ -123,18 +127,12 @@ async function populateBoard() {
     const spritesheetAsset = boardAssets.spritesheet;
     const cardbackAsset = boardAssets.cardback;
     // Create the deck and piles
-    const deck = new Deck(cardbackAsset);
+    deck = new Deck(cardbackAsset);
     const drawPile = new DrawPile(deck, 20, 20);
     drawPile.container.interactive = true;
     wastePile = new WastePile(80, 20);
 
-    foundationPiles = [
-        new FoundationPile('Hearts', 200, 20),
-        new FoundationPile('Spades', 260, 20),
-        new FoundationPile('Diamonds', 320, 20),
-        new FoundationPile('Clubs', 380, 20),
-    ];
-    const tableauPiles = [
+    tableauPiles = [
         new TablePile(20, 100, 'pile0'),
         new TablePile(80, 100, 'pile1'),
         new TablePile(140, 100, 'pile2'),
@@ -143,9 +141,16 @@ async function populateBoard() {
         new TablePile(320, 100, 'pile5'),
         new TablePile(380, 100, 'pile6'),
     ];
+    foundationPiles = [
+        new FoundationPile('Hearts', 200, 20),
+        new FoundationPile('Spades', 260, 20),
+        new FoundationPile('Diamonds', 320, 20),
+        new FoundationPile('Clubs', 380, 20),
+    ];
+
 
     // Add the deck and piles to the stage
-    app.stage.addChild(drawPile.container, wastePile.container);
+    app.stage.addChild(wastePile.container, drawPile.container);
 
     foundationPiles.forEach((pile) => {
         pile.container.interactive = true;
@@ -179,6 +184,10 @@ async function populateBoard() {
         }
     }
 
+    for (let pile of tableauPiles) {
+        console.log(pile.container.x, pile.container.y)
+    }
+
     connection.on('moves', (moves) => {
         availableMoves = moves;
     })
@@ -190,6 +199,16 @@ async function populateBoard() {
             const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
             card.reveal(result, cardFrontTexture)
             card.flip(drawPile, wastePile);
+        } else if (result) {
+
+            if (selectedCard != null && !cardTaken) {
+                // selectedCard.isSelected = false;
+                // console.log('deselect card')
+                // selectedCard = null;
+            }
+            else if (selectedCard && cardTaken) {
+                targetedPile.addCard(selectedCard);
+            }
         }
     })
 
@@ -205,6 +224,39 @@ async function populateBoard() {
             card.flip(drawPile, wastePile);
         }
     });
+
+    app.stage.on('pointertap', () => {
+        if (selectedCard == null) {
+            for (let card of deck.cards) {
+                if (card.isSelected && !cardTaken) {
+                    cardTaken = true;
+                    selectedCard = card;
+                    connection.send('move', {
+                        action: 'take',
+                        source: card.currentSource,
+                        target: null,
+                        index: card.pileIndex
+                    })
+                }
+            }
+        } else if (selectedCard) {
+            for (let pile of tableauPiles) {
+                if (pile.target && selectedCard != null && pile.type != selectedCard.currentSource) {
+                    targetedPile = pile;
+                    console.log(selectedCard, pile)
+                    cardTaken = false;
+                    connection.send('move', {
+                        action: 'place',
+                        source: selectedCard.currentSource,
+                        target: targetedPile.type,
+                        index: selectedCard.pileIndex
+                    })
+                }
+            }
+        }
+
+
+    })
 }
 
 async function welcomeScreen() {
@@ -282,7 +334,7 @@ document.addEventListener('keydown', (event) => {
 })
 
 //create update function and add it to the app ticker 
-//app.ticker.add(update);
+app.ticker.add(update);
 
 let elapsed = 0;
 
@@ -292,4 +344,5 @@ function update(dt) {
         usernameInputField.indicator.renderable = !usernameInputField.indicator.renderable;
         elapsed = 0;
     }
+
 }

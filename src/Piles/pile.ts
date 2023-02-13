@@ -1,6 +1,4 @@
-import { EventEmitter } from "events";
 import { Card } from "../Card";
-import { target } from "../app";
 import * as PIXI from 'pixi.js'
 
 export const CardMovedEvent = "card-moved";

@@ -5,7 +5,6 @@ import { WastePile } from './Piles/Waste-pile';
 import { DrawPile } from './Piles/Draw-pile';
 import { Draggable } from 'gsap/Draggable'
 import { FederatedPointerEvent } from 'pixi.js';
-import { foundationPiles } from './app';
 import { connection } from './app';
 gsap.registerPlugin(Draggable);
 gsap.registerPlugin(PixiPlugin);
@@ -17,13 +16,14 @@ export class Card {
     sprite: PIXI.Sprite;
     frontTexture: PIXI.Texture;
     backTexture: PIXI.Texture;
-    isDragging: boolean;
+    isSelected: boolean;
     currentContainerIndex: number;
     x: number;
     y: number;
     tl: gsap.core.Timeline;
     pileIndex: number;
-    private dragStartPosition: PIXI.Point;
+    currentSource = null;
+    // private dragStartPosition: PIXI.Point;
     private flipped: boolean = false;
     private isFaceUp: boolean;
 
@@ -37,78 +37,71 @@ export class Card {
         this.sprite.interactive = true;
         this.x = 0;
         this.y = 0;
-        this.isDragging = false;
-        this.dragStartPosition = new PIXI.Point();
+        this.isSelected = false;
+        // this.dragStartPosition = new PIXI.Point();
         this.tl = gsap.timeline();
     }
 
     private onPointerDown(event: FederatedPointerEvent): void {
         if (this.isFaceUp) {
-            this.dragStartPosition.x = event.data.global.x - this.sprite.x;
-            this.dragStartPosition.y = event.data.global.y - this.sprite.y;
-            this.isDragging = true;
+            // this.dragStartPosition.x = event.data.global.x - this.sprite.x;
+            // this.dragStartPosition.y = event.data.global.y - this.sprite.y;
+            this.isSelected = true;
             this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent);
             this.pileIndex = this.sprite.parent.children.length - 2
-            let currentSource;
             switch (this.currentContainerIndex) {
                 case 1:
-                    currentSource = 'stock'
+                    this.currentSource = 'stock'
                     break;
                 case 6:
-                    currentSource = 'pile0'
+                    this.currentSource = 'pile0'
                     break;
                 case 7:
-                    currentSource = 'pile1'
+                    this.currentSource = 'pile1'
                     break;
                 case 8:
-                    currentSource = 'pile2'
+                    this.currentSource = 'pile2'
                     break;
                 case 9:
-                    currentSource = 'pile3'
+                    this.currentSource = 'pile3'
                     break;
                 case 10:
-                    currentSource = 'pile4'
+                    this.currentSource = 'pile4'
                     break;
                 case 11:
-                    currentSource = 'pile5'
+                    this.currentSource = 'pile5'
                     break;
                 case 12:
-                    currentSource = 'pile6'
+                    this.currentSource = 'pile6'
                     break;
                 default:
                     break;
             }
 
-            connection.send('move', {
-                action: 'take',
-                source: currentSource,
-                target: null,
-                index: this.pileIndex
-            })
         }
     }
 
-    private onPointerUp(event: FederatedPointerEvent): void {
-        if (this.isFaceUp) {
-            this.isDragging = false;
-            if ([1, 2, 3, 4, 5].includes(this.currentContainerIndex)) {
-                this.updatePosition(this.sprite.parent.x, this.sprite.parent.y)
-            } else if ([6, 7, 8, 9, 10, 11, 12].includes(this.currentContainerIndex)) {
-                const currentIndex = this.sprite.parent.children.indexOf(this.sprite);
-                this.updatePosition(this.sprite.parent.x, this.sprite.parent.y + (currentIndex - 1) * 15);
-            }
-        }
-    }
+    // private onPointerUp(event: FederatedPointerEvent): void {
+    //     if (this.isFaceUp) {
+    //         this.isDragging = false;
+    //         if ([1, 2, 3, 4, 5].includes(this.currentContainerIndex)) {
+    //             this.updatePosition(this.sprite.parent.x, this.sprite.parent.y)
+    //         } else if ([6, 7, 8, 9, 10, 11, 12].includes(this.currentContainerIndex)) {
+    //             const currentIndex = this.sprite.parent.children.indexOf(this.sprite);
+    //             this.updatePosition(this.sprite.parent.x, this.sprite.parent.y + (currentIndex - 1) * 15);
+    //         }
+    //     }
+    // }
 
-    private onPointerMove(event: FederatedPointerEvent): void {
-        if (this.isFaceUp) {
-            if (this.isDragging) {
-                this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
-                    event.data.global.y - this.dragStartPosition.y
-                )
-            }
-        }
-    }
+    // private onPointerMove(event: FederatedPointerEvent): void {
+    //     if (this.isFaceUp) {
+    //         if (this.isDragging) {
+    //             this.sprite.position.set(event.data.global.x - this.dragStartPosition.x,
+    //                 event.data.global.y - this.dragStartPosition.y
+    //             )
+    //         }
+    //     }
+    // }
 
     reveal(info: { face: number, suit: string, faceUp: boolean }, frontTexture: PIXI.Texture) {
         this.frontTexture = frontTexture
@@ -179,10 +172,10 @@ export class Card {
     turnFaceUp() {
         this.isFaceUp = true;
         this.sprite.texture = this.isFaceUp ? this.frontTexture : this.backTexture;
-        this.sprite.on("pointerdown", this.onPointerDown.bind(this));
-        this.sprite.on("pointerup", this.onPointerUp.bind(this));
-        this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
-        this.sprite.on("pointermove", this.onPointerMove.bind(this));
+        this.sprite.on("pointertap", this.onPointerDown.bind(this));
+        // this.sprite.on("pointerup", this.onPointerUp.bind(this));
+        // this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
+        // this.sprite.on("pointermove", this.onPointerMove.bind(this));
     }
 
     turnFaceDown() {

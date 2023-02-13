@@ -3,6 +3,7 @@ import { Pile } from './Pile';
 
 export class TablePile extends Pile {
     cards: Card[];
+    target: boolean = false;
 
     constructor(x: number, y: number, type: string) {
         super();
@@ -11,6 +12,9 @@ export class TablePile extends Pile {
         this.container.y = y;
         this.type = type;
         this.outline(this.container.x - 7, this.container.y - 10);
+        this.container.on('pointertap', () => {
+            this.target = true;
+        });
     }
 
     addCard(card: Card) {
