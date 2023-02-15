@@ -50,7 +50,7 @@ export class Card {
             this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent);
             this.pileIndex = this.sprite.parent.children.length - 2
             switch (this.currentContainerIndex) {
-                case 1:
+                case 0:
                     this.currentSource = 'stock'
                     break;
                 case 6:

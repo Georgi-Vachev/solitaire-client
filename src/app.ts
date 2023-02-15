@@ -108,7 +108,6 @@ async function initConnection() {
     await connection.open();
     await connection.on('state', (newState: State) => {
         state = newState;
-        console.log(state)
         showBoard();
     });
     connection.send('startGame');
@@ -184,17 +183,12 @@ async function populateBoard() {
         }
     }
 
-    for (let pile of tableauPiles) {
-        console.log(pile.container.x, pile.container.y)
-    }
-
     connection.on('moves', (moves) => {
         availableMoves = moves;
     })
 
     connection.on('moveResult', (result) => {
         if (typeof result != 'boolean') {
-            console.log(result)
             const card = drawPile.getTopCard();
             const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
             card.reveal(result, cardFrontTexture)
@@ -243,7 +237,6 @@ async function populateBoard() {
             for (let pile of tableauPiles) {
                 if (pile.target && selectedCard != null && pile.type != selectedCard.currentSource) {
                     targetedPile = pile;
-                    console.log(selectedCard, pile)
                     cardTaken = false;
                     connection.send('move', {
                         action: 'place',
@@ -253,6 +246,8 @@ async function populateBoard() {
                     })
                 }
             }
+            selectedCard = null;
+            targetedPile = null;
         }
 
 
