@@ -11,11 +11,7 @@ export class FoundationPile extends Pile {
         this.container.x = x;
         this.container.y = y;
         this.type = 'foundation';
-
         this.outline(this.container.x - 7, this.container.y - 10);
-        this.container.on('pointertap', () => {
-            this.target = true;
-        });
     }
 
     public addCard(card: Card) {

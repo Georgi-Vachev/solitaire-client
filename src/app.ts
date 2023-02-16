@@ -110,6 +110,7 @@ async function initConnection() {
     await connection.open();
     await connection.on('state', (newState: State) => {
         state = newState;
+        console.log(state)
         showBoard();
     });
     connection.send('startGame');
@@ -197,7 +198,7 @@ async function populateBoard() {
             card.flip(drawPile, wastePile);
         } else if (result) {
 
-            if (selectedCard != null && !cardTaken) {
+            if (cardTaken) {
                 // selectedCard.isSelected = false;
                 // console.log('deselect card')
                 // selectedCard = null;
@@ -213,6 +214,7 @@ async function populateBoard() {
     app.stage.on('pointertap', async (e) => {
         const container = e.target.parent;
         const containerIndex = container.parent.children.indexOf(container);
+        console.log(container)
         let containerType = '';
         switch (containerIndex) {
             case 0:
@@ -220,6 +222,18 @@ async function populateBoard() {
                 break;
             case 1:
                 containerType = 'stock2'
+                break;
+            case 2:
+                containerType = 'clubs'
+                break;
+            case 3:
+                containerType = 'diamonds'
+                break;
+            case 4:
+                containerType = 'hearts'
+                break;
+            case 5:
+                containerType = 'spades'
                 break;
             case 6:
                 containerType = 'pile0'
@@ -245,7 +259,6 @@ async function populateBoard() {
             default:
                 break;
         }
-
         if (containerType == 'stock2') {
             if (drawPile.cards.length > 0 && !drawPile.repopulated) {
                 await connection.send('move', { action: 'flip', source: 'stock', target: null });
@@ -256,37 +269,40 @@ async function populateBoard() {
                 card.flip(drawPile, wastePile);
             }
         }
-        else
-
-            if (e.target instanceof PIXI.Sprite && !cardTaken) {
-                cardIndex = container.children.indexOf(e.target) - 1;
-                for (let pile of tableauPiles) {
-                    if (pile.type == containerType) {
-                        selectedCard = pile.cards[cardIndex];
-                    }
+        else if (e.target instanceof PIXI.Sprite && !cardTaken) {
+            cardIndex = container.children.indexOf(e.target) - 1;
+            for (let pile of tableauPiles) {
+                if (pile.type == containerType) {
+                    selectedCard = pile.cards[cardIndex];
                 }
-                if (containerType == 'stock') {
-                    selectedCard = wastePile.cards[cardIndex];
-                }
-                console.log(`Taking: [ ${selectedCard.rank}, ${selectedCard.suit} ] from pile [ ${containerType} ]`)
-                connection.send('move', {
-                    action: 'take',
-                    source: containerType,
-                    target: null,
-                    index: cardIndex
-                })
-                sourcePile = containerType;
-                cardTaken = true;
-            } else if (e.target instanceof PIXI.Sprite && cardTaken) {
-                console.log(`Placing: [ ${selectedCard.rank}, ${selectedCard.suit} ] on pile [ ${containerType} ]`)
-                connection.send('move', {
-                    action: 'place',
-                    source: sourcePile,
-                    target: containerType,
-                    index: cardIndex,
-                })
-                cardTaken = false;
             }
+            for (let pile of foundationPiles) {
+                if (pile.suit == containerType) {
+                    selectedCard = pile.cards[cardIndex];
+                }
+            }
+            if (containerType == 'stock') {
+                selectedCard = wastePile.cards[cardIndex];
+            }
+            console.log(`Taking: [ ${selectedCard.rank}, ${selectedCard.suit} ] from pile [ ${containerType} ]`)
+            connection.send('move', {
+                action: 'take',
+                source: containerType,
+                target: null,
+                index: cardIndex
+            })
+            sourcePile = containerType;
+            cardTaken = true;
+        } else if (e.target instanceof PIXI.Sprite && cardTaken) {
+            console.log(`Placing: [ ${selectedCard.rank}, ${selectedCard.suit} ] on pile [ ${containerType} ]`)
+            connection.send('move', {
+                action: 'place',
+                source: sourcePile,
+                target: containerType,
+                index: cardIndex,
+            })
+            cardTaken = false;
+        }
     })
 }
 

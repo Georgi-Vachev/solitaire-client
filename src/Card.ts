@@ -4,8 +4,7 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 import { WastePile } from './Piles/Waste-pile';
 import { DrawPile } from './Piles/Draw-pile';
 import { Draggable } from 'gsap/Draggable'
-import { FederatedPointerEvent } from 'pixi.js';
-import { connection } from './app';
+
 gsap.registerPlugin(Draggable);
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
