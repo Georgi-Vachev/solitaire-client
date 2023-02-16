@@ -172,7 +172,7 @@ export class Card {
     turnFaceUp() {
         this.isFaceUp = true;
         this.sprite.texture = this.isFaceUp ? this.frontTexture : this.backTexture;
-        this.sprite.on("pointertap", this.onPointerDown.bind(this));
+        //this.sprite.on("pointertap", this.onPointerDown.bind(this));
         // this.sprite.on("pointerup", this.onPointerUp.bind(this));
         // this.sprite.on("pointerupoutside", this.onPointerUp.bind(this));
         // this.sprite.on("pointermove", this.onPointerMove.bind(this));

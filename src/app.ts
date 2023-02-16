@@ -9,6 +9,7 @@ import { WastePile } from './Piles/Waste-pile';
 import { FoundationPile } from './Piles/Foundation-pile';
 import { TablePile } from './Piles/Table-pile';
 import { Connection } from './Connection';
+import { Card } from './Card';
 
 const disconnectBtn: HTMLElement = document.getElementById('disconnect');
 
@@ -20,7 +21,7 @@ const bundles = initBundles();
 let menuAssets;
 
 export let connection = null;
-let selectedCard;
+export let selectedCard: Card;
 let targetedPile;
 let usernameInputField: InputField;
 let username: string = '';
@@ -159,10 +160,12 @@ async function populateBoard() {
         placeholder.alpha = 0;
         pile.container.addChild(placeholder);
         app.stage.addChild(pile.container);
+        pile.setCard = setCard;
     });
 
     tableauPiles.forEach((pile) => {
         app.stage.addChild(pile.container);
+        pile.setCard = setCard;
     });
 
     // Draw the respective number of card and add them across the table piles
@@ -201,7 +204,7 @@ async function populateBoard() {
                 // selectedCard = null;
             }
             else if (selectedCard && cardTaken) {
-                targetedPile.addCard(selectedCard);
+               
             }
         }
     })
@@ -223,8 +226,10 @@ async function populateBoard() {
         if (selectedCard == null) {
             for (let card of deck.cards) {
                 if (card.isSelected && !cardTaken) {
+                    console.log('selecting card', card.currentSource, card.pileIndex);
                     cardTaken = true;
                     selectedCard = card;
+                    card.isSelected = !card.isSelected;
                     connection.send('move', {
                         action: 'take',
                         source: card.currentSource,
@@ -235,9 +240,11 @@ async function populateBoard() {
             }
         } else if (selectedCard) {
             for (let pile of tableauPiles) {
-                if (pile.target && selectedCard != null && pile.type != selectedCard.currentSource) {
+                if (pile.target && pile.type != selectedCard.currentSource) {             
                     targetedPile = pile;
+                    console.log('placing card', selectedCard.currentSource, targetedPile.type, selectedCard.pileIndex)
                     cardTaken = false;
+                    //selectedCard.currentContainerIndex = targetedPile.container.parent.children.indexOf(targetedPile.container);
                     connection.send('move', {
                         action: 'place',
                         source: selectedCard.currentSource,
@@ -245,13 +252,27 @@ async function populateBoard() {
                         index: selectedCard.pileIndex
                     })
                 }
+                pile.target = false;
+                selectedCard.isSelected = false;
             }
+            
+            selectedCard.currentSource = null;
             selectedCard = null;
             targetedPile = null;
         }
 
 
     })
+
+    function setCard(card: Card, source: string): boolean {
+        if (selectedCard != null){
+            card.isSelected = true;
+            card.currentSource = source;
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 async function welcomeScreen() {

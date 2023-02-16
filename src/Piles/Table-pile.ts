@@ -1,3 +1,4 @@
+import { selectedCard } from '../app';
 import { Card } from '../Card';
 import { Pile } from './Pile';
 
@@ -12,9 +13,7 @@ export class TablePile extends Pile {
         this.container.y = y;
         this.type = type;
         this.outline(this.container.x - 7, this.container.y - 10);
-        this.container.on('pointertap', () => {
-            this.target = true;
-        });
+       
     }
 
     addCard(card: Card) {
