@@ -16,15 +16,9 @@ export class Card {
     sprite: PIXI.Sprite;
     frontTexture: PIXI.Texture;
     backTexture: PIXI.Texture;
-    isSelected: boolean;
-    currentContainerIndex: number;
     x: number;
     y: number;
     tl: gsap.core.Timeline;
-    pileIndex: number;
-    currentSource = null;
-    // private dragStartPosition: PIXI.Point;
-    private flipped: boolean = false;
     private isFaceUp: boolean;
 
     constructor(backTexture: PIXI.Texture) {
@@ -37,49 +31,47 @@ export class Card {
         this.sprite.interactive = true;
         this.x = 0;
         this.y = 0;
-        this.isSelected = false;
-        // this.dragStartPosition = new PIXI.Point();
         this.tl = gsap.timeline();
     }
 
-    private onPointerDown(event: FederatedPointerEvent): void {
-        if (this.isFaceUp) {
-            // this.dragStartPosition.x = event.data.global.x - this.sprite.x;
-            // this.dragStartPosition.y = event.data.global.y - this.sprite.y;
-            this.isSelected = true;
-            this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent);
-            this.pileIndex = this.sprite.parent.children.length - 2
-            switch (this.currentContainerIndex) {
-                case 0:
-                    this.currentSource = 'stock'
-                    break;
-                case 6:
-                    this.currentSource = 'pile0'
-                    break;
-                case 7:
-                    this.currentSource = 'pile1'
-                    break;
-                case 8:
-                    this.currentSource = 'pile2'
-                    break;
-                case 9:
-                    this.currentSource = 'pile3'
-                    break;
-                case 10:
-                    this.currentSource = 'pile4'
-                    break;
-                case 11:
-                    this.currentSource = 'pile5'
-                    break;
-                case 12:
-                    this.currentSource = 'pile6'
-                    break;
-                default:
-                    break;
-            }
+    // private onPointerDown(event: FederatedPointerEvent): void {
+    //     if (this.isFaceUp) {
+    //         // this.dragStartPosition.x = event.data.global.x - this.sprite.x;
+    //         // this.dragStartPosition.y = event.data.global.y - this.sprite.y;
+    //         this.isSelected = true;
+    //         this.currentContainerIndex = this.sprite.parent.parent.children.indexOf(this.sprite.parent);
+    //         this.pileIndex = this.sprite.parent.children.length - 2
+    //         switch (this.currentContainerIndex) {
+    //             case 0:
+    //                 this.currentSource = 'stock'
+    //                 break;
+    //             case 6:
+    //                 this.currentSource = 'pile0'
+    //                 break;
+    //             case 7:
+    //                 this.currentSource = 'pile1'
+    //                 break;
+    //             case 8:
+    //                 this.currentSource = 'pile2'
+    //                 break;
+    //             case 9:
+    //                 this.currentSource = 'pile3'
+    //                 break;
+    //             case 10:
+    //                 this.currentSource = 'pile4'
+    //                 break;
+    //             case 11:
+    //                 this.currentSource = 'pile5'
+    //                 break;
+    //             case 12:
+    //                 this.currentSource = 'pile6'
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
     // private onPointerUp(event: FederatedPointerEvent): void {
     //     if (this.isFaceUp) {
@@ -135,20 +127,18 @@ export class Card {
     }
 
     public flip(drawPile: DrawPile, wastePile: WastePile): void {
-        if (!this.flipped) {
-            this.flipped = true;
-            this.tl.to(this.sprite, {
-                pixi: { skewY: 45, x: '+=60' }, duration: 0.25, onComplete: () => {
-                    this.turnFaceUp();
-                }
-            })
 
-            this.tl.to(this.sprite, {
-                pixi: { skewY: 0, x: '+=60' }, duration: 0.25, onComplete: () => {
-                    wastePile.drawFromDrawPile(drawPile, this);
-                }
-            })
-        }
+        this.tl.to(this.sprite, {
+            pixi: { skewY: 45, x: '+=60' }, duration: 0.25, onComplete: () => {
+                this.turnFaceUp();
+            }
+        })
+
+        this.tl.to(this.sprite, {
+            pixi: { skewY: 0, x: '+=60' }, duration: 0.25, onComplete: () => {
+                wastePile.drawFromDrawPile(drawPile, this);
+            }
+        })
     }
 
     public flipOnTablePile(): void {

@@ -22,7 +22,8 @@ let menuAssets;
 
 export let connection = null;
 export let selectedCard: Card;
-let targetedPile;
+let sourcePile;
+let cardIndex;
 let usernameInputField: InputField;
 let username: string = '';
 let foundationPiles;
@@ -160,12 +161,10 @@ async function populateBoard() {
         placeholder.alpha = 0;
         pile.container.addChild(placeholder);
         app.stage.addChild(pile.container);
-        pile.setCard = setCard;
     });
 
     tableauPiles.forEach((pile) => {
         app.stage.addChild(pile.container);
-        pile.setCard = setCard;
     });
 
     // Draw the respective number of card and add them across the table piles
@@ -191,7 +190,7 @@ async function populateBoard() {
     })
 
     connection.on('moveResult', (result) => {
-        if (typeof result != 'boolean') {
+        if (typeof result != 'boolean' && drawPile.cards.length > 0) {
             const card = drawPile.getTopCard();
             const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
             card.reveal(result, cardFrontTexture)
@@ -204,80 +203,97 @@ async function populateBoard() {
                 // selectedCard = null;
             }
             else if (selectedCard && cardTaken) {
-               
+
             }
         }
     })
 
     // Draw a card from the Draw pile and store it in the Waste pile
 
-    drawPile.container.on('pointertap', async () => {
-        if (drawPile.cards.length > 0 && !drawPile.repopulated) {
-            await connection.send('move', { action: 'flip', source: 'stock', target: null });
-        } else if (drawPile.cards.length == 0) {
-            drawPile.repopulate(wastePile);
-        } else if (drawPile.cards.length > 0 && drawPile.repopulated) {
-            const card = drawPile.getTopCard();
-            card.flip(drawPile, wastePile);
-        }
-    });
-
-    app.stage.on('pointertap', () => {
-        if (selectedCard == null) {
-            for (let card of deck.cards) {
-                if (card.isSelected && !cardTaken) {
-                    console.log('selecting card', card.currentSource, card.pileIndex);
-                    cardTaken = true;
-                    selectedCard = card;
-                    card.isSelected = !card.isSelected;
-                    connection.send('move', {
-                        action: 'take',
-                        source: card.currentSource,
-                        target: null,
-                        index: card.pileIndex
-                    })
-                }
-            }
-        } else if (selectedCard) {
-            for (let pile of tableauPiles) {
-                if (pile.target && pile.type != selectedCard.currentSource) {             
-                    targetedPile = pile;
-                    console.log('placing card', selectedCard.currentSource, targetedPile.type, selectedCard.pileIndex)
-                    cardTaken = false;
-                    //selectedCard.currentContainerIndex = targetedPile.container.parent.children.indexOf(targetedPile.container);
-                    connection.send('move', {
-                        action: 'place',
-                        source: selectedCard.currentSource,
-                        target: targetedPile.type,
-                        index: selectedCard.pileIndex
-                    })
-                }
-                pile.target = false;
-                selectedCard.isSelected = false;
-            }
-            
-            selectedCard.currentSource = null;
-            selectedCard = null;
-            targetedPile = null;
+    app.stage.on('pointertap', async (e) => {
+        const container = e.target.parent;
+        const containerIndex = container.parent.children.indexOf(container);
+        let containerType = '';
+        switch (containerIndex) {
+            case 0:
+                containerType = 'stock'
+                break;
+            case 1:
+                containerType = 'stock2'
+                break;
+            case 6:
+                containerType = 'pile0'
+                break;
+            case 7:
+                containerType = 'pile1'
+                break;
+            case 8:
+                containerType = 'pile2'
+                break;
+            case 9:
+                containerType = 'pile3'
+                break;
+            case 10:
+                containerType = 'pile4'
+                break;
+            case 11:
+                containerType = 'pile5'
+                break;
+            case 12:
+                containerType = 'pile6'
+                break;
+            default:
+                break;
         }
 
+        if (containerType == 'stock2') {
+            if (drawPile.cards.length > 0 && !drawPile.repopulated) {
+                await connection.send('move', { action: 'flip', source: 'stock', target: null });
+            } else if (drawPile.cards.length == 0) {
+                drawPile.repopulate(wastePile);
+            } else if (drawPile.cards.length > 0 && drawPile.repopulated) {
+                const card = drawPile.getTopCard();
+                card.flip(drawPile, wastePile);
+            }
+        }
+        else
 
+            if (e.target instanceof PIXI.Sprite && !cardTaken) {
+                cardIndex = container.children.indexOf(e.target) - 1;
+                for (let pile of tableauPiles) {
+                    if (pile.type == containerType) {
+                        selectedCard = pile.cards[cardIndex];
+                    }
+                }
+                if (containerType == 'stock') {
+                    selectedCard = wastePile.cards[cardIndex];
+                }
+                console.log(`Taking: [ ${selectedCard.rank}, ${selectedCard.suit} ] from pile [ ${containerType} ]`)
+                connection.send('move', {
+                    action: 'take',
+                    source: containerType,
+                    target: null,
+                    index: cardIndex
+                })
+                sourcePile = containerType;
+                cardTaken = true;
+            } else if (e.target instanceof PIXI.Sprite && cardTaken) {
+                console.log(`Placing: [ ${selectedCard.rank}, ${selectedCard.suit} ] on pile [ ${containerType} ]`)
+                connection.send('move', {
+                    action: 'place',
+                    source: sourcePile,
+                    target: containerType,
+                    index: cardIndex,
+                })
+                cardTaken = false;
+            }
     })
-
-    function setCard(card: Card, source: string): boolean {
-        if (selectedCard != null){
-            card.isSelected = true;
-            card.currentSource = source;
-            return true;
-        } else {
-            return false;
-        }
-    }
 }
 
 async function welcomeScreen() {
     disconnectBtn.style.display = 'none';
     app.stage.removeChildren()
+    app.stage.off('pointertap');
     username = '';
 
     // Load textures
