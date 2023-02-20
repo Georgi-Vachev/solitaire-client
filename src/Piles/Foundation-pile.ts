@@ -14,18 +14,18 @@ export class FoundationPile extends Pile {
         this.outline(this.container.x - 7, this.container.y - 10);
     }
 
-    public addCard(card: Card) {
-        if (this.cards.length === 0 && card.rank === 1) {
-            this.container.addChild(card.sprite);
-            return super.addCard(card);
-        } else if (this.cards.length > 0 && card.suit === this.suit &&
-            card.rank === this.getTopCard().rank + 1) {
-            this.container.addChild(card.sprite);
-            return super.addCard(card);
-        } else {
-            return false;
-        }
-    }
+    // public addCard(card: Card) {
+    //     if (this.cards.length === 0 && card.rank === 1) {
+    //         this.container.addChild(card.sprite);
+    //         return super.addCard(card);
+    //     } else if (this.cards.length > 0 && card.suit === this.suit &&
+    //         card.rank === this.getTopCard().rank + 1) {
+    //         this.container.addChild(card.sprite);
+    //         return super.addCard(card);
+    //     } else {
+    //         return false;
+    //     }
+    // }
     // public async drawFromWastePile() {
     //     const card = wastePile.getTopCard();
     //     if (card != undefined) {

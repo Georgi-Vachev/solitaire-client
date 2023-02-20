@@ -23,7 +23,7 @@ const bundles = initBundles();
 let menuAssets;
 
 export let connection = null;
-export let selectedCard: Card;
+let selectedCard: Card;
 let sourcePile;
 let cardIndex;
 let usernameInputField: InputField;
@@ -146,10 +146,10 @@ async function populateBoard() {
         new TablePile(380, 100, 'pile6'),
     ];
     foundationPiles = [
-        new FoundationPile('Hearts', 200, 20),
-        new FoundationPile('Spades', 260, 20),
-        new FoundationPile('Diamonds', 320, 20),
-        new FoundationPile('Clubs', 380, 20),
+        new FoundationPile('clubs', 200, 20),
+        new FoundationPile('diamonds', 260, 20),
+        new FoundationPile('hearts', 320, 20),
+        new FoundationPile('spades', 380, 20),
     ];
 
 
@@ -200,12 +200,29 @@ async function populateBoard() {
             card.flip(drawPile, wastePile);
         } else if (result) {
             if (cardTaken) {
-              
+
             }
             else if (selectedCard != null) {
-                for (let pile of tableauPiles){
-                    if (pile.type == containerType){
+                if (sourcePile == 'stock') {
+                    wastePile.removeCard(selectedCard);
+                    console.log(`removed card ${selectedCard} from waste`)
+                }
+                for (let pile of tableauPiles) {
+                    if (pile.type == sourcePile) {
+                        pile.removeCard(selectedCard);
+                    }
+                    if (pile.type == containerType) {
                         pile.addCard(selectedCard);
+                        selectedCard = null;
+                    }
+                }
+                if (selectedCard != null) {
+                    for (let pile of foundationPiles) {
+                        if (pile.suit == containerType) {
+                            pile.addCard(selectedCard);
+                            selectedCard.updatePosition(pile.container.x, pile.container.y)
+                            selectedCard = null;
+                        }
                     }
                 }
             }
@@ -276,7 +293,7 @@ async function populateBoard() {
         }
         else if (e.target instanceof Object && !cardTaken) {
             cardIndex = container.children.indexOf(e.target) - 1;
-            
+
             for (let pile of tableauPiles) {
                 if (pile.type == containerType) {
                     selectedCard = pile.cards[cardIndex];
