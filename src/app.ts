@@ -194,22 +194,44 @@ async function populateBoard() {
 
     connection.on('moveResult', (result) => {
         if (typeof result != 'boolean' && drawPile.cards.length > 0) {
-            const card = drawPile.getTopCard();
+            console.log(sourcePile);
             const cardFrontTexture = spritesheetAsset.textures[result.suit[0].toUpperCase() + String(result.face)]
-            card.reveal(result, cardFrontTexture)
-            card.flip(drawPile, wastePile);
+            if (sourcePile[0] == 'p'){
+                for (let pile of tableauPiles){
+                    if (pile.type == sourcePile){
+                        const card = pile.topCard;
+                        card.reveal(result, cardFrontTexture);
+                    }
+                }
+            } else {
+                const card = drawPile.getTopCard();
+                card.reveal(result, cardFrontTexture)
+                card.flip(drawPile, wastePile);
+            }
+            
         } else if (result) {
             if (cardTaken) {
 
             }
             else if (selectedCard != null) {
+                let buffCard = selectedCard;
                 if (sourcePile == 'stock') {
                     wastePile.removeCard(selectedCard);
-                    console.log(`removed card ${selectedCard} from waste`)
+                    console.log(`removed card ${selectedCard.rank} from waste`)
                 }
                 for (let pile of tableauPiles) {
                     if (pile.type == sourcePile) {
-                        pile.removeCard(selectedCard);
+                        const index = pile.cards.indexOf(buffCard);
+                        if (pile.cards.length > 0){
+                            pile.removeCard(buffCard);
+                            connection.send('move', {
+                            action: 'flip',
+                            source: sourcePile,
+                            target: null,
+                            index: index - 1
+                        })
+                        }
+                        
                     }
                     if (pile.type == containerType) {
                         pile.addCard(selectedCard);
@@ -282,6 +304,7 @@ async function populateBoard() {
                 break;
         }
         if (containerType == 'stock2') {
+            sourcePile = containerType;
             if (drawPile.cards.length > 0 && !drawPile.repopulated) {
                 await connection.send('move', { action: 'flip', source: 'stock', target: null });
             } else if (drawPile.cards.length == 0) {
